@@ -1,11 +1,11 @@
 from unittest import TestCase
 
-from src import CommandHandler
+from src import CommandInputThread
 
 
 class TestCommandHandler(TestCase):
     def test_command_parse(self):
-        ch = CommandHandler.CommandHandler()
+        ch = CommandInputThread.CommandInputThread()
 
         cases = list()
 
