@@ -33,7 +33,9 @@ class SqliteHandler:
             db_cmd += ', '
         db_cmd = db_cmd[:-2] + ')'
 
-        return self.execute_db_cmd(db_cmd)
+        c = self.execute_db_cmd(db_cmd)
+        self.conn.commit()
+        return c
 
     def insert_into(self, name, columns, values):
         """
@@ -49,7 +51,9 @@ class SqliteHandler:
         db_cmd += ' VALUES '
         db_cmd += '(' + ','.join(values) + ')'
 
-        return self.execute_db_cmd(db_cmd)
+        c = self.execute_db_cmd(db_cmd)
+        self.conn.commit()
+        return c
 
     def select(self, name, columns):
         """
@@ -61,3 +65,16 @@ class SqliteHandler:
 
         db_cmd = 'SELECT {columns} FROM {name}'.format(columns=columns, name=name)
         return self.execute_db_cmd(db_cmd)
+
+    def delete(self, name):
+        """
+
+        :param name: (str) table name
+        :return:
+        """
+
+        db_cmd = 'DELETE FROM {name} '.format(name=name)
+
+        c = self.execute_db_cmd(db_cmd)
+        self.conn.commit()
+        return c

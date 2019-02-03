@@ -95,5 +95,24 @@ class CommandInputThread(threading.Thread):
 
             print(('+' + '-' * 25) * len(run.system_fields) + '+')
 
+        elif full_command['command'] == ['create', 'system'] and full_command['name'] is not None:
+            conn = sqlite3.connect(run.db_file_path)
+
+            sqlite_handler = SqliteHandler(conn)
+            sqlite_handler.insert_into('system',
+                                       ['system_name', 'date_created', 'date_modified'],
+                                       ['\'{name}\''.format(name=full_command['name']), 'datetime()', 'datetime()'])
+
+        elif full_command['command'] == ['clear', 'system']:
+            confirm = input('Are you sure to clear table \'system\'? This action can\'t be undone (y\\n): ')
+
+            if confirm.lower() in ['y', 'yes']:
+                conn = sqlite3.connect(run.db_file_path)
+
+                sqlite_handler = SqliteHandler(conn)
+                sqlite_handler.delete('system')
+
+                print('Table \'system\' is successfully cleared')
+
         else:
             print('Invalid Command: %s' % full_command)
