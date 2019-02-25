@@ -9,7 +9,7 @@ class TestSpace(TestCase):
         self.dimension = (5, 5, 5)
         self.resolution = 4
 
-        self.space = Space(name='MySpace', dimension=self.dimension,
+        self.space = Space(dimension=self.dimension,
                            space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
                            resolution=self.resolution)
 
@@ -18,7 +18,7 @@ class TestSpace(TestCase):
 
     def test_constructor_valid_1(self):
         print('===== Running test_constructor_valid_1 =====')
-        space = Space(name='MySpace', dimension=self.dimension,
+        space = Space(dimension=self.dimension,
                       space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
                       resolution=self.resolution)
 
@@ -27,37 +27,31 @@ class TestSpace(TestCase):
     def test_constructor_invalid_1(self):
         print('===== Running test_constructor_invalid_1 =====')
 
-        def func1():
-            space = Space(name=1, dimension=self.dimension,
-                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
-                          resolution=self.resolution)
-
         def func2():
-            space = Space(name='MySpace', dimension=('5', 5, 5),
+            space = Space(dimension=('5', 5, 5),
                           space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
                           resolution=self.resolution)
 
         def func3():
-            space = Space(name='MySpace', dimension=(5, '5', 5),
+            space = Space(dimension=(5, '5', 5),
                           space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
                           resolution=self.resolution)
 
         def func4():
-            space = Space(name='MySpace', dimension=(5, 5, '5'),
+            space = Space(dimension=(5, 5, '5'),
                           space_factor_types=['TEMPERATURE'],
                           resolution=self.resolution)
 
         def func5():
-            space = Space(name='MySpace', dimension=self.dimension,
+            space = Space(dimension=self.dimension,
                           space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
                           resolution='1')
 
         def func6():
-            space = Space(name='MySpace', dimension=(5, 5, 5, 5, 5),
+            space = Space(dimension=(5, 5, 5, 5, 5),
                           space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
                           resolution='1')
 
-        self.assertRaises(TypeError, func1)
         self.assertRaises(TypeError, func2)
         self.assertRaises(TypeError, func3)
         self.assertRaises(TypeError, func4)
@@ -126,3 +120,5 @@ class TestSpace(TestCase):
 
         self.assertRaises(TypeError, func1)
         self.assertRaises(TypeError, func2)
+
+    # TODO: Test data types

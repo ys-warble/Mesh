@@ -45,13 +45,13 @@ class AirMovement(Enum):
 
 
 def generate(space_factor_type, dimension, resolution):
-    '''
+    """
 
     :param space_factor_type: SpaceFactor Enum
     :param dimension: Tuple dimensions o
     :param resolution:
     :return:
-    '''
+    """
 
     space_subfactors = []
     dtypes = []

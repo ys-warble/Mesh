@@ -2,12 +2,7 @@ import WarbleSimulation.System.SpaceFactor as SpaceFactor
 
 
 class Space:
-    def __init__(self, name, dimension, space_factor_types, resolution=1):
-        if isinstance(name, str):
-            self.name = name
-        else:
-            raise TypeError
-
+    def __init__(self, dimension, space_factor_types, resolution=1):
         if isinstance(dimension, tuple) \
                 and len(dimension) == 3 \
                 and all(isinstance(d, int) for d in dimension) \
@@ -37,7 +32,6 @@ class Space:
         string = ''
         string += 'Space'
         string += '('
-        string += '\n  name=%s,' % self.name
         string += '\n  dimension=%s,' % str(self.dimension)
         string += '\n  resolution=%s,' % str(self.resolution)
 
