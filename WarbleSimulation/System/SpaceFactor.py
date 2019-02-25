@@ -3,6 +3,7 @@ from enum import Enum
 import numpy as np
 
 
+# SpaceFactor
 class SpaceFactor(Enum):
     MATTER = 'MATTER'
     TEMPERATURE = 'TEMPERATURE'
@@ -11,6 +12,8 @@ class SpaceFactor(Enum):
     AIR_MOVEMENT = 'AIR_MOVEMENT'
 
 
+# TODO create mapping here so that the number of if-else is reduced
+# SpaceSubfactor
 class Matter(Enum):
     MATTER = 0
 
@@ -42,6 +45,29 @@ class AirMovement(Enum):
     X = 1  # in m/s
     Y = 2  # in m/s
     Z = 3  # in m/s
+
+
+SpaceFactorMap = {
+    SpaceFactor.MATTER: {
+        Matter.MATTER: {'dtype': MatterType, 'default_value': MatterType.ATMOSPHERE},
+    },
+    SpaceFactor.TEMPERATURE: {
+        Temperature.TEMPERATURE: {'dtype': int, 'default_value': 300},
+    },
+    SpaceFactor.LUMINOSITY: {
+        Luminosity.HUE: {'dtype': int, 'default_value': 0},
+        Luminosity.SATURATION: {'dtype': int, 'default_value': 0},
+        Luminosity.BRIGHTNESS: {'dtype': int, 'default_value': 0},
+    },
+    SpaceFactor.HUMIDITY: {
+        Humidity.HUMIDITY: {'dtype': int, 'default_value': 0},
+    },
+    SpaceFactor.AIR_MOVEMENT: {
+        AirMovement.X: {'dtype': int, 'default_value': 0},
+        AirMovement.Y: {'dtype': int, 'default_value': 0},
+        AirMovement.Z: {'dtype': int, 'default_value': 0},
+    },
+}
 
 
 def generate(space_factor_type, dimension, resolution):
