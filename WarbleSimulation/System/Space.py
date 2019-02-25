@@ -27,15 +27,18 @@ class Space:
         self.space_factors = {}
         if isinstance(space_factors, list) and all(isinstance(sf, SpaceFactor) for sf in space_factors):
             for space_factor in space_factors:
+                # TODO: should not be None
                 self.space_factors[space_factor] = None
         else:
             raise TypeError
 
     def add_space_factor(self, space_factor):
         if isinstance(space_factor, SpaceFactor):
+            # TODO: should not be None
             self.space_factors[space_factor] = None
         elif isinstance(space_factor, list) and all(isinstance(sf, SpaceFactor) for sf in space_factor):
             for sf in space_factor:
+                # TODO: should not be None
                 self.space_factors[sf] = None
         else:
             raise TypeError
