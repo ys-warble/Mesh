@@ -18,39 +18,46 @@ class TestSpace(TestCase):
 
     def test_constructor_valid_1(self):
         print('===== Running test_constructor_valid_1 =====')
-        space = Space(dimension=self.dimension,
-                      space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
-                      resolution=self.resolution)
 
-        self.assertTrue(isinstance(space, Space))
+        def func1():
+            return Space(dimension=self.dimension,
+                         resolution=self.resolution,
+                         space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER])
+
+        def func2():
+            space = Space(dimension=self.dimension)
+            return
+
+        self.assertTrue(isinstance(func1(), Space))
+        self.assertTrue(isinstance(func2(), Space))
 
     def test_constructor_invalid_1(self):
         print('===== Running test_constructor_invalid_1 =====')
 
         def func2():
             space = Space(dimension=('5', 5, 5),
-                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
-                          resolution=self.resolution)
+                          resolution=self.resolution,
+                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER])
 
         def func3():
             space = Space(dimension=(5, '5', 5),
-                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
-                          resolution=self.resolution)
+                          resolution=self.resolution,
+                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER])
 
         def func4():
             space = Space(dimension=(5, 5, '5'),
-                          space_factor_types=['TEMPERATURE'],
-                          resolution=self.resolution)
+                          resolution=self.resolution,
+                          space_factor_types=['TEMPERATURE'])
 
         def func5():
             space = Space(dimension=self.dimension,
-                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
-                          resolution='1')
+                          resolution='1',
+                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER])
 
         def func6():
             space = Space(dimension=(5, 5, 5, 5, 5),
-                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
-                          resolution='1')
+                          resolution='1',
+                          space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER])
 
         self.assertRaises(TypeError, func2)
         self.assertRaises(TypeError, func3)
@@ -70,8 +77,8 @@ class TestSpace(TestCase):
         space_factor_types.append(SpaceFactor.AIR_MOVEMENT)
         space_factor_types.append(SpaceFactor.HUMIDITY)
 
-        self.assertEqual(len(self.space.space_factors), total_space_factor)
-        self.assertEqual(list(self.space.space_factors.keys()), space_factor_types)
+        self.assertEqual(total_space_factor, len(self.space.space_factors))
+        self.assertEqual(space_factor_types, list(self.space.space_factors.keys()))
 
         for a, b in self.space.space_factors.items():
             for c, d in b.items():
@@ -90,8 +97,8 @@ class TestSpace(TestCase):
         space_factor_types.append(SpaceFactor.HUMIDITY)
         space_factor_types.append(SpaceFactor.LUMINOSITY)
 
-        self.assertEqual(len(self.space.space_factors), total_space_factor)
-        self.assertEqual(list(self.space.space_factors.keys()), space_factor_types)
+        self.assertEqual(total_space_factor, len(self.space.space_factors))
+        self.assertEqual(space_factor_types, list(self.space.space_factors.keys()))
 
         for a, b in self.space.space_factors.items():
             for c, d in b.items():
