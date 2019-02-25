@@ -68,10 +68,16 @@ class TestSpace(TestCase):
         print('===== Running test_add_space_factor_valid_single =====')
 
         total_space_factor = len(self.space.space_factors)
+        space_factor_types = list(self.space.space_factors.keys())
+
         self.space.add_space_factor(SpaceFactor.AIR_MOVEMENT)
         self.space.add_space_factor(SpaceFactor.HUMIDITY)
+        total_space_factor += 2
+        space_factor_types.append(SpaceFactor.AIR_MOVEMENT)
+        space_factor_types.append(SpaceFactor.HUMIDITY)
 
-        self.assertEqual(len(self.space.space_factors), total_space_factor + 2)
+        self.assertEqual(len(self.space.space_factors), total_space_factor)
+        self.assertEqual(list(self.space.space_factors.keys()), space_factor_types)
 
         for a, b in self.space.space_factors.items():
             for c, d in b.items():
@@ -81,10 +87,17 @@ class TestSpace(TestCase):
         print('===== Running test_add_space_factor_valid_list =====')
 
         total_space_factor = len(self.space.space_factors)
+        space_factor_types = list(self.space.space_factors.keys())
+
         self.space.add_space_factor([SpaceFactor.AIR_MOVEMENT, SpaceFactor.HUMIDITY, SpaceFactor.LUMINOSITY])
         self.space.add_space_factor([])
+        total_space_factor += 3
+        space_factor_types.append(SpaceFactor.AIR_MOVEMENT)
+        space_factor_types.append(SpaceFactor.HUMIDITY)
+        space_factor_types.append(SpaceFactor.LUMINOSITY)
 
-        self.assertEqual(len(self.space.space_factors), total_space_factor + 3)
+        self.assertEqual(len(self.space.space_factors), total_space_factor)
+        self.assertEqual(list(self.space.space_factors.keys()), space_factor_types)
 
         for a, b in self.space.space_factors.items():
             for c, d in b.items():
