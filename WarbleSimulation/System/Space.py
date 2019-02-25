@@ -2,7 +2,10 @@ import WarbleSimulation.System.SpaceFactor as SpaceFactor
 
 
 class Space:
-    def __init__(self, dimension, space_factor_types, resolution=1):
+    def __init__(self, dimension, resolution=1, space_factor_types=None):
+        if space_factor_types is None:
+            space_factor_types = []
+
         if isinstance(dimension, tuple) \
                 and len(dimension) == 3 \
                 and all(isinstance(d, int) for d in dimension) \
