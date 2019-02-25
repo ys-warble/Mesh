@@ -69,11 +69,11 @@ def generate(space_factor_type, dimension, resolution):
 
     elif space_factor_type == SpaceFactor.LUMINOSITY:
         space_subfactors = Luminosity
-        dtypes = [int]
+        dtypes = [int, int, int]
 
     elif space_factor_type == SpaceFactor.AIR_MOVEMENT:
         space_subfactors = AirMovement
-        dtypes = [int]
+        dtypes = [int, int, int]
     else:
         raise Exception('Unknown SpaceFactor Type')
 
