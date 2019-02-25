@@ -23,6 +23,9 @@ class TestCommandHandler(TestCase):
         cases.append({'Q': 'set system --name myhome',
                       'A': {'command': ['set', 'system'], 'name': 'myhome', 'size': None, 'location': None,
                             'scale': None, 'timestamp': None}})
+        cases.append({'Q': 'clear system',
+                      'A': {'command': ['clear', 'system'], 'name': None, 'size': None, 'location': None,
+                            'scale': None, 'timestamp': None}})
         cases.append({'Q': 'system',
                       'A': {'command': ['system'], 'name': None, 'size': None, 'location': None, 'scale': None,
                             'timestamp': None}})
