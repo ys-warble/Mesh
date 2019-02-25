@@ -79,35 +79,12 @@ def generate(space_factor_type, dimension, resolution):
     :return:
     """
 
-    space_subfactors = []
-    dtypes = []
-    if space_factor_type == SpaceFactor.MATTER:
-        space_subfactors = Matter
-        dtypes = [MatterType]
-
-    elif space_factor_type == SpaceFactor.TEMPERATURE:
-        space_subfactors = Temperature
-        dtypes = [int]
-
-    elif space_factor_type == SpaceFactor.HUMIDITY:
-        space_subfactors = Humidity
-        dtypes = [int]
-
-    elif space_factor_type == SpaceFactor.LUMINOSITY:
-        space_subfactors = Luminosity
-        dtypes = [int, int, int]
-
-    elif space_factor_type == SpaceFactor.AIR_MOVEMENT:
-        space_subfactors = AirMovement
-        dtypes = [int, int, int]
-    else:
-        raise Exception('Unknown SpaceFactor Type')
-
     space_matrices = {}
-    for i, space_subfactor in enumerate(space_subfactors):
-        if i < len(dtypes) and dtypes[i] is not None:
-            space_matrices[space_subfactor] = np.zeros(tuple([i * resolution for i in dimension]), dtypes[i])
-        else:
-            space_matrices[space_subfactor] = np.zeros(tuple([i * resolution for i in dimension]))
+    for space_subfactor in SpaceFactorMap[space_factor_type]:
+        space_matrices[space_subfactor] = np.full(shape=tuple([i * resolution for i in dimension]),
+                                                  fill_value=SpaceFactorMap[space_factor_type][space_subfactor][
+                                                      'default_value'],
+                                                  dtype=SpaceFactorMap[space_factor_type][space_subfactor]['dtype']
+                                                  )
 
     return space_matrices
