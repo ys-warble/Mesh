@@ -26,7 +26,7 @@ class TestSpace(TestCase):
 
         def func2():
             space = Space(dimension=self.dimension)
-            return
+            return space
 
         self.assertTrue(isinstance(func1(), Space))
         self.assertTrue(isinstance(func2(), Space))

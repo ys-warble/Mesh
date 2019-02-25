@@ -31,6 +31,10 @@ class Space:
         else:
             raise TypeError
 
+    def init_space_factor(self, space_factor_type, space_subfactor, value):
+        # TODO do testing on valid input
+        self.space_factors[space_factor_type][space_subfactor].fill(value)
+
     def __str__(self):
         string = ''
         string += 'Space'
