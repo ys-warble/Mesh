@@ -24,7 +24,7 @@ class MatterType(Enum):
     WATER = 2
     WOOD = 3
     CONCRETE = 4
-    SOLID = 5
+    PERFECT_SOLID = 5
 
 
 class Temperature(Enum):
@@ -49,7 +49,7 @@ class AirMovement(Enum):
 
 SpaceFactorMap = {
     SpaceFactor.MATTER: {
-        Matter.MATTER: {'dtype': MatterType, 'default_value': MatterType.ATMOSPHERE},
+        Matter.MATTER: {'dtype': int, 'default_value': MatterType.ATMOSPHERE.value},
     },
     SpaceFactor.TEMPERATURE: {
         Temperature.TEMPERATURE: {'dtype': int, 'default_value': 300},

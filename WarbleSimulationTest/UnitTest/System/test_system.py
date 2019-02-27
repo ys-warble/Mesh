@@ -20,9 +20,6 @@ class TestSystem(TestCase):
     def test_put_space(self):
         self.system.put_space(dimension=self.dimension, resolution=self.resolution, space_factor_types=[])
 
-    def test_init_normal_space(self):
-        self.fail()
-
     def test_put_entity(self):
         self.fail()
 

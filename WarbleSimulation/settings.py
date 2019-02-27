@@ -1,4 +1,10 @@
 # Logging
 import logging
 
-LOGGING_LEVEL = logging.ERROR
+# Logging
+from WarbleSimulation.util.PlotterTool import PlotterTool
+
+LOGGING_LEVEL = logging.DEBUG
+
+# Plotting
+PLOTTER_TOOL = PlotterTool.PLOTLY
