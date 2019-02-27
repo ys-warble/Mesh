@@ -29,7 +29,12 @@ class System:
         # Matter placement
         # self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER]
 
-        self.entities.append((entity, location, direction))
+        is_fit = False
+
+        if is_fit:
+            self.entities.append((entity, location, direction))
+
+        return is_fit
 
     def remove_entity(self):
         pass
