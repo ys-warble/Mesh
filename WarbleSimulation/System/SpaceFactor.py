@@ -20,11 +20,17 @@ class Matter(Enum):
 
 class MatterType(Enum):
     ETHER = 0
-    ATMOSPHERE = 1
-    WATER = 2
-    WOOD = 3
-    CONCRETE = 4
-    PERFECT_SOLID = 5
+
+    GAS = 100
+    ATMOSPHERE = 101
+
+    LIQUID = 200
+    WATER = 201
+
+    SOLID = 300
+    WOOD = 301
+    CONCRETE = 302
+    PERFECT_SOLID = 399
 
 
 class Temperature(Enum):
