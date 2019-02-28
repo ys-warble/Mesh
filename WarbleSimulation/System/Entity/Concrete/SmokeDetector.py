@@ -7,6 +7,7 @@ from WarbleSimulation.System.SpaceFactor import MatterType
 class SmokeDetector(Concrete):
     identifier = 'smoke_detector'
     default_dimension = (2, 2, 1)
+    default_direction = (0, 0, -1)
 
     def __init__(self, uuid, dimension_x=(1, 1, 1)):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.PLASTIC)

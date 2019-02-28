@@ -7,6 +7,7 @@ from WarbleSimulation.System.SpaceFactor import MatterType
 class Thermostat(Concrete):
     identifier = 'thermostat'
     default_dimension = (2, 1, 2)
+    default_direction = (0, 1, 0)
 
     def __init__(self, uuid, dimension_x=(1, 1, 1)):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.PLASTIC)

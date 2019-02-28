@@ -31,10 +31,10 @@ class System:
 
     def put_entity(self, entity, location, unit_direction=None, reference='origin', in_resolution=False):
         self.logger.debug('Entity dimension = %s => %s' % (
-        entity.dimension, tuple([i * self.space.resolution for i in entity.dimension])))
+            entity.dimension, tuple([i * self.space.resolution for i in entity.dimension])))
         self.logger.debug('Put Location = %s => %s' % (location, tuple([i * self.space.resolution for i in location])))
         self.logger.debug('Space = %s => %s' % (
-        self.space.dimension, tuple([i * self.space.resolution for i in self.space.dimension])))
+            self.space.dimension, tuple([i * self.space.resolution for i in self.space.dimension])))
         # TODO check validity
 
         # TODO: Check location is in space

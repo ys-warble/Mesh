@@ -5,6 +5,7 @@ from WarbleSimulation.System.Entity import Entity
 
 class Concrete(Entity):
     default_dimension = (1, 1, 1)
+    default_direction = (0, 1, 0)
 
     def __init__(self, uuid, dimension_x, matter_type):
         super().__init__(uuid)
