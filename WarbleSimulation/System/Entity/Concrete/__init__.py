@@ -27,8 +27,6 @@ def transform_shape(entity_shape, from_direction, to_direction):
             t = to_direction.index(-1)
             t_s = True
 
-        rot_k = 0
-        rot_dir = (0, 0)
         if f_s is not t_s and f == t:
             rot_k = 2
             t = f + 1 if f < 2 else f - 1
@@ -45,7 +43,7 @@ def transform_shape(entity_shape, from_direction, to_direction):
 
 class Concrete(Entity):
     default_dimension = (1, 1, 1)
-    default_direction = (0, 1, 0)
+    default_orientation = (0, 1, 0)
 
     def __init__(self, uuid, dimension_x, matter_type):
         super().__init__(uuid)
