@@ -40,7 +40,8 @@ def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None):
         z=z[nz_array3d_indices],
         mode='markers',
         marker=dict(
-            size=2,
+            symbol='circle',
+            size=4,
             color=array3d[nz_array3d_indices],  # set color to an array/list of desired values
             colorscale='Viridis',  # choose a colorscale
             opacity=1
