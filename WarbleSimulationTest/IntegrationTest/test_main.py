@@ -30,7 +30,7 @@ class TestMain(TestCase):
         light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
         self.system.put_entity(light1, (19, 14, 7))
         ac1 = AirConditioner(uuid=uuid.uuid4())
-        self.system.put_entity(ac1, (12, 0, 7))
+        self.system.put_entity(ac1, (12, 0, 7), unit_direction=(-1, 0, 0))
         sd1 = SmokeDetector(uuid=uuid.uuid4())
         self.system.put_entity(sd1, (10, 10, 9))
         thermostat1 = Thermostat(uuid=uuid.uuid4())
