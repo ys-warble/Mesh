@@ -1,3 +1,5 @@
+import numpy as np
+
 from WarbleSimulation.System import SpaceFactor
 from WarbleSimulation.System.Space import Space
 from WarbleSimulation.util import Logger
@@ -74,9 +76,18 @@ class System:
             return False
 
         # Modify Matter
-        print(x_begin, x_end, y_begin, y_end, z_begin, z_end)
-        self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][x_begin:x_end + 1,
-        y_begin:y_end + 1, z_begin:z_end + 1] = entity.matter_type.value
+        entity_shape = entity.get_shape()
+        if entity_shape is None:
+            self.logger.debug('entity_shape doesn\'t exist')
+            self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][x_begin:x_end + 1,
+            y_begin:y_end + 1, z_begin:z_end + 1] = entity.matter_type.value
+        else:
+            self.logger.debug('entity_shape exists')
+            temp = self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][
+                   x_begin:x_end + 1, y_begin:y_end + 1, z_begin:z_end + 1]
+            new = np.where((temp / 100).astype(int) > (entity_shape / 100).astype(int), temp, entity_shape)
+            self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][x_begin:x_end + 1,
+            y_begin:y_end + 1, z_begin:z_end + 1] = new
 
         # Change the space factor
         self.entities.append((entity, location, unit_direction))
