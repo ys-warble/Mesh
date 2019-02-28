@@ -29,7 +29,10 @@ def transform_shape(entity_shape, from_direction, to_direction):
 
         if f_s is not t_s and f == t:
             rot_k = 2
-            t = f + 1 if f < 2 else f - 1
+            if t == 0:
+                t = 1
+            else:
+                t = 0
             rot_dir = (f, t)
         elif f_s is not t_s:
             rot_k = 1
