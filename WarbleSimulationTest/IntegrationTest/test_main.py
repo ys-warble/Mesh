@@ -2,7 +2,11 @@ import uuid
 from unittest import TestCase
 
 import WarbleSimulation.System.SpaceFactor as SpaceFactor
+from WarbleSimulation.System.Entity.Concrete.AirConditioner import AirConditioner
+from WarbleSimulation.System.Entity.Concrete.Light import Light
+from WarbleSimulation.System.Entity.Concrete.SmokeDetector import SmokeDetector
 from WarbleSimulation.System.Entity.Concrete.Table import Table
+from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Logger, Plotter
@@ -23,6 +27,14 @@ class TestMain(TestCase):
         # Put Entity on the Space
         table1 = Table(uuid=uuid.uuid4(), dimension_x=(2, 1, 1))
         self.system.put_entity(table1, (0, 0, 0))
+        light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
+        self.system.put_entity(light1, (19, 14, 7))
+        ac1 = AirConditioner(uuid=uuid.uuid4())
+        self.system.put_entity(ac1, (12, 0, 7))
+        sd1 = SmokeDetector(uuid=uuid.uuid4())
+        self.system.put_entity(sd1, (10, 10, 9))
+        thermostat1 = Thermostat(uuid=uuid.uuid4())
+        self.system.put_entity(thermostat1, (30, 0, 5))
 
         # Plot
         Plotter.plot_scatter_3d(
