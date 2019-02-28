@@ -13,7 +13,7 @@ class Light(Concrete):
         self.dimension = tuple(
             [Light.default_dimension[i] * self.dimension_x[i] for i in range(len(Light.default_dimension))])
 
-    def get_shape(self):
+    def get_default_shape(self):
         matter = self.matter_type.value
         shape = np.array([
             [[0, 0, 0],
@@ -26,9 +26,5 @@ class Light(Concrete):
              [0, matter, 0],
              [0, 0, 0]],
         ])
-
-        multiplier = tuple([int(self.dimension[i] / Light.default_dimension[i]) for i in range(len(self.dimension))])
-
-        shape = np.kron(shape, np.ones(multiplier))
 
         return shape

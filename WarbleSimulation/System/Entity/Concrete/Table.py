@@ -13,21 +13,16 @@ class Table(Concrete):
         self.dimension = tuple(
             [Table.default_dimension[i] * self.dimension_x[i] for i in range(len(Table.default_dimension))])
 
-    def get_shape(self):
-        shape = np.zeros(Table.default_dimension)
+    def get_default_shape(self):
+        dimension = type(self).default_dimension
 
-        shape[:, :, Table.default_dimension[2] - 1:Table.default_dimension[2]] = self.matter_type.value
-        shape[0:1, 0:1, 0:Table.default_dimension[2] - 1] = self.matter_type.value
-        shape[Table.default_dimension[0] - 1:Table.default_dimension[0], 0:1,
-        0:Table.default_dimension[2] - 1] = self.matter_type.value
-        shape[0:1, Table.default_dimension[1] - 1:Table.default_dimension[1],
-        0:Table.default_dimension[2] - 1] = self.matter_type.value
-        shape[Table.default_dimension[0] - 1:Table.default_dimension[0],
-        Table.default_dimension[1] - 1:Table.default_dimension[1],
-        0:Table.default_dimension[2] - 1] = self.matter_type.value
+        shape = np.zeros(dimension)
 
-        multiplier = tuple([int(self.dimension[i] / Table.default_dimension[i]) for i in range(len(self.dimension))])
-
-        shape = np.kron(shape, np.ones(multiplier))
+        shape[:, :, dimension[2] - 1:dimension[2]] = self.matter_type.value
+        shape[0:1, 0:1, 0:dimension[2] - 1] = self.matter_type.value
+        shape[dimension[0] - 1:dimension[0], 0:1, 0:dimension[2] - 1] = self.matter_type.value
+        shape[0:1, dimension[1] - 1:dimension[1], 0:dimension[2] - 1] = self.matter_type.value
+        shape[dimension[0] - 1:dimension[0], dimension[1] - 1:Table.default_dimension[1],
+        0:dimension[2] - 1] = self.matter_type.value
 
         return shape
