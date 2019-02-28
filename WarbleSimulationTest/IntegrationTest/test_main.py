@@ -1,3 +1,5 @@
+import filecmp
+import os
 import uuid
 from unittest import TestCase
 
@@ -10,6 +12,7 @@ from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Logger, Plotter
+from WarbleSimulationTest import test_settings
 
 
 class TestMain(TestCase):
@@ -17,6 +20,8 @@ class TestMain(TestCase):
         self.logger = Logger.get_logger(__name__)
 
     def test_main(self):
+        test_name = 'test_main'
+
         # Create System
         self.system = System('MyNewSystem')
 
@@ -30,19 +35,28 @@ class TestMain(TestCase):
         light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
         self.system.put_entity(light1, (19, 14, 7))
         ac1 = AirConditioner(uuid=uuid.uuid4())
-        self.system.put_entity(ac1, (12, 0, 7), unit_direction=(-1, 0, 0))
+        self.system.put_entity(ac1, (37, 10, 7), unit_orientation=(-1, 0, 0))
         sd1 = SmokeDetector(uuid=uuid.uuid4())
-        self.system.put_entity(sd1, (10, 10, 9))
+        self.system.put_entity(sd1, (0, 10, 8), unit_orientation=(1, 0, 0))
         thermostat1 = Thermostat(uuid=uuid.uuid4())
         self.system.put_entity(thermostat1, (30, 0, 5))
+
+        # Compare Space Factor Matter
+        self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER].tofile(
+            os.path.join(test_settings.actual_path, test_name + '_space_matter.txt'))
+        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_matter.txt'),
+                                    os.path.join(test_settings.actual_path, test_name + '_space_matter.txt')))
 
         # Plot
         Plotter.plot_scatter_3d(
             array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
             zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-            filename=r'after_put.html')
+            filename=os.path.join(test_settings.actual_path, test_name + '_plot.html'),
+            auto_open=test_settings.auto_open)
 
     def test_main_1(self):
+        test_name = 'test_main_1'
+
         # Create System
         self.system = System('MyNewSystem')
 
@@ -62,8 +76,15 @@ class TestMain(TestCase):
         wall_4 = Wall(uuid=uuid.uuid4(), dimension_x=(0.25, 9.5, 5))
         self.system.put_entity(wall_4, (19.75, 0.25, 0))
 
+        # Compare Space Factor Matter
+        self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER].tofile(
+            os.path.join(test_settings.actual_path, test_name + '_space_matter.txt'))
+        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_matter.txt'),
+                                    os.path.join(test_settings.actual_path, test_name + '_space_matter.txt')))
+
         # Plot
         Plotter.plot_scatter_3d(
             array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
             zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-            filename=r'after_put_1.html')
+            filename=os.path.join(test_settings.actual_path, test_name + '_plot.html'),
+            auto_open=test_settings.auto_open)
