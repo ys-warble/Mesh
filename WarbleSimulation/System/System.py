@@ -1,6 +1,7 @@
 import numpy as np
 
 from WarbleSimulation.System import SpaceFactor
+from WarbleSimulation.System.Entity import Concrete
 from WarbleSimulation.System.Space import Space
 from WarbleSimulation.util import Logger
 
@@ -30,26 +31,31 @@ class System:
         # TODO: How if the space is re-put after putting entities?
 
     def put_entity(self, entity, location, unit_direction=None, reference='origin', in_resolution=False):
-        self.logger.debug('Entity dimension = %s => %s' % (
-            entity.dimension, tuple([i * self.space.resolution for i in entity.dimension])))
-        self.logger.debug('Put Location = %s => %s' % (location, tuple([i * self.space.resolution for i in location])))
-        self.logger.debug('Space = %s => %s' % (
-            self.space.dimension, tuple([i * self.space.resolution for i in self.space.dimension])))
-        # TODO check validity
+        # TODO check validity, entity = entity, location is tuple 3,
+        # unit direction is tuple 3 and only 1 is set, rest are unset, reference is only origin
 
-        # TODO: Check location is in space
+        # Check location is in space
         if not all(0 <= location[i] < self.space.dimension[i] * self.space.resolution for i in range(len(location))):
             return False
+
+        # Get Entity Shape
+        entity_shape = entity.get_shape()
+        if entity_shape is not None and unit_direction is not None:
+            entity_shape = Concrete.transform_shape(entity_shape, type(entity).default_direction, unit_direction)
+        elif entity_shape is None:
+            entity_shape = np.fill(entity.dimension, entity.matter_type.value)
+        else:
+            pass
 
         res_multiplier = 1 if in_resolution is True else self.space.resolution
 
         if reference == 'origin':
             x_begin = int(location[0] * res_multiplier)
-            x_end = int(location[0] * res_multiplier + entity.dimension[0] * res_multiplier - 1)
+            x_end = int(location[0] * res_multiplier + entity_shape.shape[0] * res_multiplier - 1)
             y_begin = int(location[1] * res_multiplier)
-            y_end = int(location[1] * res_multiplier + entity.dimension[1] * res_multiplier - 1)
+            y_end = int(location[1] * res_multiplier + entity_shape.shape[1] * res_multiplier - 1)
             z_begin = int(location[2] * res_multiplier)
-            z_end = int(location[2] * res_multiplier + entity.dimension[2] * res_multiplier - 1)
+            z_end = int(location[2] * res_multiplier + entity_shape.shape[2] * res_multiplier - 1)
 
         # TODO define when reference == 'center' or remove it all
         # elif reference == 'center':
@@ -68,6 +74,8 @@ class System:
             return False
 
         # Check if fit, not exceeding boundary
+        self.logger.debug('x_begin: %s; x_end: %s; y_begin: %s; y_end: %s; z_begin: %s; z_end: %s;' % (
+        x_begin, x_end, y_begin, y_end, z_begin, z_end))
         if x_begin < 0 or \
                 y_begin < 0 or \
                 z_begin < 0 or \
@@ -77,17 +85,10 @@ class System:
             return False
 
         # Modify Matter
-        entity_shape = entity.get_shape()
         if entity_shape is None:
-            self.logger.debug('entity_shape doesn\'t exist')
             self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][x_begin:x_end + 1,
             y_begin:y_end + 1, z_begin:z_end + 1] = entity.matter_type.value
         else:
-            # TODO: the unit direction conversion is still wrong because it is done after defining x_begin, x_end, etc. We have to rearrange the sequence
-            # if unit_direction is not None:
-            #     entity_shape = Concrete.transform_shape(entity_shape, type(entity).default_direction, unit_direction)
-
-            self.logger.debug('entity_shape exists')
             temp = self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][
                    x_begin:x_end + 1, y_begin:y_end + 1, z_begin:z_end + 1]
             new = np.where((temp / 100).astype(int) > (entity_shape / 100).astype(int), temp, entity_shape)
