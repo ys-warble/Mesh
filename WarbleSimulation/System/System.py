@@ -51,17 +51,18 @@ class System:
             z_begin = int(location[2] * res_multiplier)
             z_end = int(location[2] * res_multiplier + entity.dimension[2] * res_multiplier - 1)
 
-        elif reference == 'center':
-            x_center = int((entity.dimension[0] * self.space.resolution - 1) / 2)
-            y_center = int((entity.dimension[1] * self.space.resolution - 1) / 2)
-            z_center = int((entity.dimension[2] * self.space.resolution - 1) / 2)
-
-            x_begin = (location[0] * self.space.resolution - int((entity.dimension[0] * self.space.resolution + 1) / 2))
-            x_end = (location[0] * self.space.resolution + int((entity.dimension[0] * self.space.resolution + 1) / 2))
-            y_begin = (location[1] * self.space.resolution - int((entity.dimension[1] * self.space.resolution + 1) / 2))
-            y_end = (location[1] * self.space.resolution + int((entity.dimension[1] * self.space.resolution + 1) / 2))
-            z_begin = (location[2] * self.space.resolution - int((entity.dimension[2] * self.space.resolution + 1) / 2))
-            z_end = (location[2] * self.space.resolution + int((entity.dimension[2] * self.space.resolution + 1) / 2))
+        # TODO define when reference == 'center' or remove it all
+        # elif reference == 'center':
+        #     x_center = int((entity.dimension[0] * self.space.resolution - 1) / 2)
+        #     y_center = int((entity.dimension[1] * self.space.resolution - 1) / 2)
+        #     z_center = int((entity.dimension[2] * self.space.resolution - 1) / 2)
+        #
+        #     x_begin = (location[0] * self.space.resolution - int((entity.dimension[0] * self.space.resolution + 1) / 2))
+        #     x_end = (location[0] * self.space.resolution + int((entity.dimension[0] * self.space.resolution + 1) / 2))
+        #     y_begin = (location[1] * self.space.resolution - int((entity.dimension[1] * self.space.resolution + 1) / 2))
+        #     y_end = (location[1] * self.space.resolution + int((entity.dimension[1] * self.space.resolution + 1) / 2))
+        #     z_begin = (location[2] * self.space.resolution - int((entity.dimension[2] * self.space.resolution + 1) / 2))
+        #     z_end = (location[2] * self.space.resolution + int((entity.dimension[2] * self.space.resolution + 1) / 2))
 
         else:
             return False
