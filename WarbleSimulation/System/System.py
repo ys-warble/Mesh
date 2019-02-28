@@ -82,6 +82,10 @@ class System:
             self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][x_begin:x_end + 1,
             y_begin:y_end + 1, z_begin:z_end + 1] = entity.matter_type.value
         else:
+            # TODO: the unit direction conversion is still wrong because it is done after defining x_begin, x_end, etc. We have to rearrange the sequence
+            # if unit_direction is not None:
+            #     entity_shape = Concrete.transform_shape(entity_shape, type(entity).default_direction, unit_direction)
+
             self.logger.debug('entity_shape exists')
             temp = self.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER][
                    x_begin:x_end + 1, y_begin:y_end + 1, z_begin:z_end + 1]
