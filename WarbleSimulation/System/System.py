@@ -30,7 +30,7 @@ class System:
 
         # TODO: How if the space is re-put after putting entities?
 
-    def put_entity(self, entity, location, unit_direction=None, reference='origin', in_resolution=False):
+    def put_entity(self, entity, location, unit_orientation=None, reference='origin', in_resolution=False):
         # TODO check validity, entity = entity, location is tuple 3,
         # unit direction is tuple 3 and only 1 is set, rest are unset, reference is only origin
 
@@ -40,8 +40,8 @@ class System:
 
         # Get Entity Shape
         entity_shape = entity.get_shape()
-        if entity_shape is not None and unit_direction is not None:
-            entity_shape = Concrete.transform_shape(entity_shape, type(entity).default_direction, unit_direction)
+        if entity_shape is not None and unit_orientation is not None:
+            entity_shape = Concrete.transform_shape(entity_shape, type(entity).default_orientation, unit_orientation)
         elif entity_shape is None:
             entity_shape = np.fill(entity.dimension, entity.matter_type.value)
         else:
@@ -96,7 +96,7 @@ class System:
             y_begin:y_end + 1, z_begin:z_end + 1] = new
 
         # Change the space factor
-        self.entities.append((entity, location, unit_direction))
+        self.entities.append((entity, location, unit_orientation))
 
         return True
 
