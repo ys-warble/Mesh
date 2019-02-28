@@ -6,7 +6,7 @@ from WarbleSimulation.System.Entity.Concrete import transform_shape
 from WarbleSimulation.util import Logger
 
 
-class TestTransform_shape(TestCase):
+class TestConcrete(TestCase):
     def setUp(self):
         self.logger = Logger.get_logger(__name__)
         self.arr = np.arange(8).reshape((2, 2, 2))
