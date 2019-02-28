@@ -38,38 +38,26 @@ class System:
         if not all(0 <= location[i] < self.space.dimension[i] * self.space.resolution for i in range(len(location))):
             return False
 
+        res_multiplier = 1 if in_resolution is True else self.space.resolution
+
         # Get Entity Shape
         entity_shape = entity.get_shape()
         if entity_shape is not None and unit_orientation is not None:
             entity_shape = Concrete.transform_shape(entity_shape, type(entity).default_orientation, unit_orientation)
         elif entity_shape is None:
-            entity_shape = np.fill(entity.dimension, entity.matter_type.value)
+            entity_shape = np.full(
+                tuple([int(entity.dimension[i] * res_multiplier) for i in range(len(entity.dimension))]),
+                entity.matter_type.value)
         else:
             pass
 
-        res_multiplier = 1 if in_resolution is True else self.space.resolution
-
         if reference == 'origin':
             x_begin = int(location[0] * res_multiplier)
-            x_end = int(location[0] * res_multiplier + entity_shape.shape[0] * res_multiplier - 1)
+            x_end = int(location[0] * res_multiplier + entity_shape.shape[0] - 1)
             y_begin = int(location[1] * res_multiplier)
-            y_end = int(location[1] * res_multiplier + entity_shape.shape[1] * res_multiplier - 1)
+            y_end = int(location[1] * res_multiplier + entity_shape.shape[1] - 1)
             z_begin = int(location[2] * res_multiplier)
-            z_end = int(location[2] * res_multiplier + entity_shape.shape[2] * res_multiplier - 1)
-
-        # TODO define when reference == 'center' or remove it all
-        # elif reference == 'center':
-        #     x_center = int((entity.dimension[0] * self.space.resolution - 1) / 2)
-        #     y_center = int((entity.dimension[1] * self.space.resolution - 1) / 2)
-        #     z_center = int((entity.dimension[2] * self.space.resolution - 1) / 2)
-        #
-        #     x_begin = (location[0] * self.space.resolution - int((entity.dimension[0] * self.space.resolution + 1) / 2))
-        #     x_end = (location[0] * self.space.resolution + int((entity.dimension[0] * self.space.resolution + 1) / 2))
-        #     y_begin = (location[1] * self.space.resolution - int((entity.dimension[1] * self.space.resolution + 1) / 2))
-        #     y_end = (location[1] * self.space.resolution + int((entity.dimension[1] * self.space.resolution + 1) / 2))
-        #     z_begin = (location[2] * self.space.resolution - int((entity.dimension[2] * self.space.resolution + 1) / 2))
-        #     z_end = (location[2] * self.space.resolution + int((entity.dimension[2] * self.space.resolution + 1) / 2))
-
+            z_end = int(location[2] * res_multiplier + entity_shape.shape[2] - 1)
         else:
             return False
 
