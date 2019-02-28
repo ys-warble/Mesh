@@ -28,8 +28,10 @@ class MatterType(Enum):
     WATER = 201
 
     SOLID = 300
-    WOOD = 301
-    CONCRETE = 302
+    PLASTIC = 301
+    WOOD = 302
+    GLASS = 303
+    CONCRETE = 304
     PERFECT_SOLID = 399
 
 
