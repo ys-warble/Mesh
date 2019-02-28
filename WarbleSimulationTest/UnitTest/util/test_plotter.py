@@ -1,8 +1,10 @@
+import os
 from unittest import TestCase
 
 import numpy as np
 
 from WarbleSimulation.util import Plotter
+from WarbleSimulationTest import test_settings
 
 
 class TestPlotter(TestCase):
@@ -18,4 +20,5 @@ class TestPlotter(TestCase):
         space_factor_matter[0:20, :, 15:20] = 4
         space_factor_matter[60:80, :, 15:20] = 3
 
-        Plotter.plotly_plot_scatter_3d(space_factor_matter, 2)
+        Plotter.plotly_plot_scatter_3d(space_factor_matter, 2,
+                                       filename=os.path.join(test_settings.actual_path, '3d-scatter-colorscale.html'))
