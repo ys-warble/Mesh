@@ -1,9 +1,7 @@
-from abc import ABC
-
 from WarbleSimulation.System.Entity import Entity
 
 
-class Concrete(ABC, Entity):
+class Concrete(Entity):
     default_dimension = (1, 1, 1)
 
     def __init__(self, uuid, dimension_x, matter_type):
