@@ -6,16 +6,18 @@ from WarbleSimulation import settings
 from WarbleSimulation.util.PlotterTool import PlotterTool
 
 
-def plot_scatter_3d(array3d, zero_value=0):
+def plot_scatter_3d(array3d,
+                    zero_value=0,
+                    filename=None):
     func = None
 
     if settings.PLOTTER_TOOL == PlotterTool.PLOTLY:
         func = plotly_plot_scatter_3d
 
-    func(array3d=array3d, zero_value=zero_value)
+    func(array3d=array3d, zero_value=zero_value, filename=filename)
 
 
-def plotly_plot_scatter_3d(array3d, zero_value=0):
+def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None):
     # zero_value = 0 if ('zero_value' not in kwargs or not isinstance(kwargs['zero_value'], int)) else kwargs[
     #     'zero_value']
 
@@ -38,10 +40,10 @@ def plotly_plot_scatter_3d(array3d, zero_value=0):
         z=z[nz_array3d_indices],
         mode='markers',
         marker=dict(
-            size=3,
+            size=2,
             color=array3d[nz_array3d_indices],  # set color to an array/list of desired values
             colorscale='Viridis',  # choose a colorscale
-            opacity=0.80
+            opacity=1
         )
     )
 
@@ -57,4 +59,6 @@ def plotly_plot_scatter_3d(array3d, zero_value=0):
         )
     )
     fig = go.Figure(data=data, layout=layout)
-    py.offline.plot(fig, filename=r'C:/Users/yosef/Desktop/Project/WarbleSimulation/3d-scatter-colorscale.html')
+    if filename is None:
+        filename = r'3d-scatter-colorscale.html'
+    py.offline.plot(fig, filename=filename)
