@@ -8,16 +8,17 @@ from WarbleSimulation.util.PlotterTool import PlotterTool
 
 def plot_scatter_3d(array3d,
                     zero_value=0,
-                    filename=None):
+                    filename=None,
+                    auto_open=True):
     func = None
 
     if settings.PLOTTER_TOOL == PlotterTool.PLOTLY:
         func = plotly_plot_scatter_3d
 
-    func(array3d=array3d, zero_value=zero_value, filename=filename)
+    func(array3d=array3d, zero_value=zero_value, filename=filename, auto_open=auto_open)
 
 
-def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None):
+def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True):
     # zero_value = 0 if ('zero_value' not in kwargs or not isinstance(kwargs['zero_value'], int)) else kwargs[
     #     'zero_value']
 
@@ -62,4 +63,4 @@ def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None):
     fig = go.Figure(data=data, layout=layout)
     if filename is None:
         filename = r'3d-scatter-colorscale.html'
-    py.offline.plot(fig, filename=filename)
+    py.offline.plot(fig, filename=filename, auto_open=auto_open)
