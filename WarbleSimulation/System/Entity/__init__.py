@@ -15,3 +15,6 @@ class Entity(ABC):
         self.preference = None
         self.action = None
         self.intent = None
+
+    def get_shape(self):
+        return None
