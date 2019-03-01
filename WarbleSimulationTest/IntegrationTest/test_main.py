@@ -3,13 +3,18 @@ import os
 import uuid
 from unittest import TestCase
 
+import numpy as np
+
 import WarbleSimulation.System.SpaceFactor as SpaceFactor
 from WarbleSimulation.System.Entity.Concrete.AirConditioner import AirConditioner
+from WarbleSimulation.System.Entity.Concrete.Chair import Chair
+from WarbleSimulation.System.Entity.Concrete.Human import Human
 from WarbleSimulation.System.Entity.Concrete.Light import Light
 from WarbleSimulation.System.Entity.Concrete.SmokeDetector import SmokeDetector
 from WarbleSimulation.System.Entity.Concrete.Table import Table
 from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
+from WarbleSimulation.System.Entity.Concrete.Wardrobe import Wardrobe
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Logger, Plotter
 from WarbleSimulationTest import test_settings
@@ -26,33 +31,71 @@ class TestMain(TestCase):
         self.system = System('MyNewSystem')
 
         # Put Space on the System
-        self.system.put_space(dimension=(40, 30, 10), resolution=1,
+        self.system.put_space(dimension=(40, 30, 12), resolution=1,
                               space_factor_types=[i for i in SpaceFactor.SpaceFactor])
 
         # Put Entity on the Space
         table1 = Table(uuid=uuid.uuid4(), dimension_x=(2, 1, 1))
-        self.system.put_entity(table1, (0, 0, 0))
         light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
-        self.system.put_entity(light1, (19, 14, 7))
         ac1 = AirConditioner(uuid=uuid.uuid4())
-        self.system.put_entity(ac1, (37, 10, 7), unit_orientation=(-1, 0, 0))
         sd1 = SmokeDetector(uuid=uuid.uuid4())
-        self.system.put_entity(sd1, (0, 10, 8), unit_orientation=(1, 0, 0))
         thermostat1 = Thermostat(uuid=uuid.uuid4())
+        ch1 = Chair(uuid=uuid.uuid4())
+        h1 = Human(uuid=uuid.uuid4())
+        w1 = Wardrobe(uuid=uuid.uuid4())
+
+        self.system.put_entity(table1, (0, 0, 0))
+        self.system.put_entity(light1, (19, 14, 9))
+        self.system.put_entity(ac1, (37, 10, 9), unit_orientation=(-1, 0, 0))
+        self.system.put_entity(sd1, (10, 10, 11), unit_orientation=(0, 0, -1))
         self.system.put_entity(thermostat1, (30, 0, 5))
+        self.system.put_entity(ch1, (4, 4, 0), unit_orientation=(0, -1, 0))
+        self.system.put_entity(h1, (25, 20, 0), unit_orientation=(0, -1, 0))
+        self.system.put_entity(w1, (0, 20, 0), unit_orientation=(1, 0, 0))
 
         # Compare Space Factor Matter
         self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER].tofile(
             os.path.join(test_settings.actual_path, test_name + '_space_matter.txt'))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_matter.txt'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_matter.txt')))
+        self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER].tofile(
+            os.path.join(test_settings.actual_path, test_name + '_space_temperature.txt'))
 
         # Plot
         Plotter.plot_scatter_3d(
             array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
             zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-            filename=os.path.join(test_settings.actual_path, test_name + '_plot.html'),
+            filename=os.path.join(test_settings.actual_path, test_name + '_matter_plot.html'),
             auto_open=test_settings.auto_open)
+
+        x_dark, y_dark, z_dark = (self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][
+                                      SpaceFactor.Matter.MATTER] > 300).nonzero()
+        for i in range(len(x_dark)):
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS][
+                x_dark[i], y_dark[i], z_dark[i]] = 0
+
+        self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS][0:3,
+        20:25, 0:7] = 0
+        self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS][0:9, 0:3,
+        0:3] = 0
+
+        luminosity = np.char.add(np.full(self.system.space.dimension, 'hsl('), np.char.mod('%d',
+                                                                                           self.system.space.space_factors[
+                                                                                               SpaceFactor.SpaceFactor.LUMINOSITY][
+                                                                                               SpaceFactor.Luminosity.HUE]))
+        luminosity = np.char.add(luminosity, np.full(self.system.space.dimension, ','))
+        luminosity = np.char.add(luminosity, np.char.mod('%d', self.system.space.space_factors[
+            SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION]))
+        luminosity = np.char.add(luminosity, np.full(self.system.space.dimension, '%,'))
+        luminosity = np.char.add(luminosity, np.char.mod('%d', self.system.space.space_factors[
+            SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS]))
+        luminosity = np.char.add(luminosity, np.full(self.system.space.dimension, '%)'))
+
+        Plotter.plot_scatter_3d(
+            array3d=luminosity,
+            zero_value=-1,
+            filename=os.path.join(test_settings.actual_path, test_name + '_luminosity_plot.html'),
+            auto_open=test_settings.auto_open,
+            opacity=0.6
+        )
 
     def test_main_1(self):
         test_name = 'test_main_1'
@@ -86,5 +129,40 @@ class TestMain(TestCase):
         Plotter.plot_scatter_3d(
             array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
             zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-            filename=os.path.join(test_settings.actual_path, test_name + '_plot.html'),
+            filename=os.path.join(test_settings.actual_path, test_name + '_matter_plot.html'),
+            auto_open=test_settings.auto_open)
+
+    def test_main_2(self):
+        test_name = 'test_main_2'
+
+        # Create System
+        self.system = System('MyNewSystem')
+
+        # Put Space on the System
+        self.system.put_space(dimension=(40, 30, 10), resolution=1,
+                              space_factor_types=[i for i in SpaceFactor.SpaceFactor])
+
+        # Put Entity on the Space
+        table1 = Table(uuid=uuid.uuid4(), dimension_x=(2, 1, 1))
+        self.system.put_entity(table1, (0, 0, 0))
+        light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
+        self.system.put_entity(light1, (19, 14, 7))
+        ac1 = AirConditioner(uuid=uuid.uuid4())
+        self.system.put_entity(ac1, (37, 10, 7), unit_orientation=(-1, 0, 0))
+        sd1 = SmokeDetector(uuid=uuid.uuid4())
+        self.system.put_entity(sd1, (0, 10, 8), unit_orientation=(1, 0, 0))
+        thermostat1 = Thermostat(uuid=uuid.uuid4())
+        self.system.put_entity(thermostat1, (30, 0, 5))
+
+        # Compare Space Factor Matter
+        self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER].tofile(
+            os.path.join(test_settings.actual_path, test_name + '_space_matter.txt'))
+        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_matter.txt'),
+                                    os.path.join(test_settings.actual_path, test_name + '_space_matter.txt')))
+
+        # Plot
+        Plotter.plot_scatter_3d(
+            array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
+            zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
+            filename=os.path.join(test_settings.actual_path, test_name + '_matter_plot.html'),
             auto_open=test_settings.auto_open)

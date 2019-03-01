@@ -5,6 +5,17 @@ from WarbleSimulation.System.Entity import Entity
 
 def transform_shape(entity_shape, from_direction, to_direction):
     # TODO check validity of entity and to_direction
+    if not isinstance(entity_shape, np.ndarray) or \
+            not isinstance(from_direction, tuple) or \
+            not isinstance(to_direction, tuple):
+        raise TypeError
+
+    if len(from_direction) != 3 or len(to_direction) != 3:
+        raise IndexError
+
+    if not ((from_direction.count(1) == 1 or from_direction.count(-1) == 1) and from_direction.count(0) == 2) or \
+            not ((to_direction.count(1) == 1 or to_direction.count(-1) == 1) and to_direction.count(0) == 2):
+        raise NotImplementedError
 
     if from_direction == to_direction:
         return entity_shape
@@ -29,7 +40,10 @@ def transform_shape(entity_shape, from_direction, to_direction):
 
         if f_s is not t_s and f == t:
             rot_k = 2
-            t = f + 1 if f < 2 else f - 1
+            if t == 0:
+                t = 1
+            else:
+                t = 0
             rot_dir = (f, t)
         elif f_s is not t_s:
             rot_k = 1

@@ -6,7 +6,7 @@ from WarbleSimulation.System.SpaceFactor import MatterType
 
 class Table(Concrete):
     identifier = 'tables'
-    default_dimension = (4, 4, 4)
+    default_dimension = (5, 4, 4)
     default_orientation = (0, 1, 0)
 
     def __init__(self, uuid, dimension_x=(1, 1, 1)):
