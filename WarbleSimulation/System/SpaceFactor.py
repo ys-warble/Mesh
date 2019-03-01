@@ -45,9 +45,9 @@ class Humidity(Enum):
 
 
 class Luminosity(Enum):
-    HUE = 1  # range 0-255
-    SATURATION = 2  # range 0-255
-    BRIGHTNESS = 3  # range 0-255
+    HUE = 1  # range 0-360
+    SATURATION = 2  # range 0-100
+    BRIGHTNESS = 3  # range 0-100
 
 
 class AirMovement(Enum):
@@ -64,9 +64,9 @@ SpaceFactorMap = {
         Temperature.TEMPERATURE: {'dtype': int, 'default_value': 300},
     },
     SpaceFactor.LUMINOSITY: {
-        Luminosity.HUE: {'dtype': int, 'default_value': 0},
-        Luminosity.SATURATION: {'dtype': int, 'default_value': 0},
-        Luminosity.BRIGHTNESS: {'dtype': int, 'default_value': 0},
+        Luminosity.HUE: {'dtype': int, 'default_value': 42},
+        Luminosity.SATURATION: {'dtype': int, 'default_value': 99},
+        Luminosity.BRIGHTNESS: {'dtype': int, 'default_value': 72},
     },
     SpaceFactor.HUMIDITY: {
         Humidity.HUMIDITY: {'dtype': int, 'default_value': 0},
