@@ -9,16 +9,17 @@ from WarbleSimulation.util.PlotterTool import PlotterTool
 def plot_scatter_3d(array3d,
                     zero_value=0,
                     filename=None,
-                    auto_open=True):
+                    auto_open=True,
+                    opacity=1):
     func = None
 
     if settings.PLOTTER_TOOL == PlotterTool.PLOTLY:
         func = plotly_plot_scatter_3d
 
-    func(array3d=array3d, zero_value=zero_value, filename=filename, auto_open=auto_open)
+    func(array3d=array3d, zero_value=zero_value, filename=filename, auto_open=auto_open, opacity=opacity)
 
 
-def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True):
+def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True, cc=1, opacity=1):
     # zero_value = 0 if ('zero_value' not in kwargs or not isinstance(kwargs['zero_value'], int)) else kwargs[
     #     'zero_value']
 
@@ -33,7 +34,10 @@ def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True)
     z = z.reshape(-1)
     array3d = array3d.reshape(-1)
 
-    nz_array3d_indices = (array3d > zero_value).nonzero()
+    if array3d.dtype in [int, float]:
+        nz_array3d_indices = (array3d > zero_value).nonzero()
+    else:
+        nz_array3d_indices = array3d.nonzero()
 
     trace1 = go.Scatter3d(
         x=x[nz_array3d_indices],
@@ -45,7 +49,7 @@ def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True)
             size=4,
             color=array3d[nz_array3d_indices],  # set color to an array/list of desired values
             colorscale='Viridis',  # choose a colorscale
-            opacity=1
+            opacity=opacity
         )
     )
 
