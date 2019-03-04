@@ -21,5 +21,8 @@ class Entity(ABC):
     def get_shape(self):
         return None
 
-    def run(self):
+    def run(self, mp_space_factors, mp_task_pipe):
         pass
+
+    def handle_task(self, task):
+        raise NotImplementedError
