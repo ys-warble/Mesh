@@ -3,6 +3,8 @@ import os
 import uuid
 from unittest import TestCase
 
+import dill
+
 import WarbleSimulation.System.SpaceFactor as SpaceFactor
 import WarbleSimulation.util.mynumpy as mynp
 from WarbleSimulation.System.Entity.Concrete.AirConditioner import AirConditioner
@@ -51,6 +53,29 @@ class TestMain(TestCase):
         self.system.put_entity(ch1, (4, 4, 0), unit_orientation=(0, -1, 0))
         self.system.put_entity(h1, (25, 20, 0), unit_orientation=(0, -1, 0))
         self.system.put_entity(w1, (0, 20, 0), unit_orientation=(1, 0, 0))
+
+        print(dill.check(self.system))
+
+        # light1 = Light(uuid=uuid.uuid4())
+        # light2 = Light(uuid=uuid.uuid4())
+        #
+        # light1_q = Queue()
+        # light1_ppipe, light1_cpipe = Pipe()
+        # light1_p = Process(target=light1.run, args=(light1_cpipe,))
+        # light2_q = Queue()
+        # light2_ppipe, light2_cpipe = Pipe()
+        # light2_p = Process(target=light2.run, args=(light2_cpipe,))
+        #
+        # light1_p.start()
+        # light2_p.start()
+        #
+        # light1_ppipe.send('uuid')
+        # print(light1_ppipe.recv())
+        #
+        # time.sleep(5)
+        #
+        # light1_ppipe.send(None)
+        # light2_ppipe.send(None)
 
     def test_main_1(self):
         test_name = 'test_main_1'

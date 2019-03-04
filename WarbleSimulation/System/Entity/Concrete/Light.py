@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 
 from WarbleSimulation.System.Entity.Concrete import Concrete
@@ -29,3 +31,43 @@ class Light(Concrete):
         ])
 
         return shape
+
+    # def run(self, task_queue=None):
+    #     if task_queue is None or not isinstance(task_queue, Queue):
+    #         return
+    #
+    #     while True:
+    #         task = task_queue.get()
+    #
+    #         if task is None:
+    #             print('Light \'%s\' quit. Bye!' % self.uuid)
+    #             break
+    #         else:
+    #             print('Light \'%s\' executing task: %s ...' % (self.uuid, task))
+    #             if task == 'wait':
+    #                 time.sleep(3)
+    #             elif task == 'uuid':
+    #
+    #             elif task == 'dimension':
+    #                 pass
+    #             print('Light \'%s\' task done' % self.uuid)
+
+    def run(self, task_pipe=None):
+        if task_pipe is None:
+            return
+
+        while True:
+            task = task_pipe.recv()
+            if task is None:
+                print('Light \'%s\' quit. Bye!' % self.uuid)
+                task_pipe.close()
+                break
+            else:
+                print('Light \'%s\' executing task: %s ...' % (self.uuid, task))
+                if task == 'wait':
+                    time.sleep(3)
+                elif task == 'uuid':
+                    task_pipe.send(self.uuid)
+                elif task == 'dimension':
+                    task_pipe.send(self.dimension)
+                print('Light \'%s\' task done' % self.uuid)
