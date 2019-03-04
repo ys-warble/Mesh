@@ -1,12 +1,11 @@
 import filecmp
 import os
 import uuid
+from multiprocessing import Process, Manager, Pipe
 from unittest import TestCase
 
-import dill
-
 import WarbleSimulation.System.SpaceFactor as SpaceFactor
-import WarbleSimulation.util.mynumpy as mynp
+import WarbleSimulation.util.numpy_ext as npx
 from WarbleSimulation.System.Entity.Concrete.AirConditioner import AirConditioner
 from WarbleSimulation.System.Entity.Concrete.Chair import Chair
 from WarbleSimulation.System.Entity.Concrete.Human import Human
@@ -16,6 +15,7 @@ from WarbleSimulation.System.Entity.Concrete.Table import Table
 from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.Entity.Concrete.Wardrobe import Wardrobe
+from WarbleSimulation.System.Entity.Task import Task, Command
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Logger, Plotter
 from WarbleSimulationTest import test_settings
@@ -36,46 +36,65 @@ class TestMain(TestCase):
                               space_factor_types=[i for i in SpaceFactor.SpaceFactor])
 
         # Put Entity on the Space
-        table1 = Table(uuid=uuid.uuid4(), dimension_x=(2, 1, 1))
         light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
-        ac1 = AirConditioner(uuid=uuid.uuid4())
-        sd1 = SmokeDetector(uuid=uuid.uuid4())
-        thermostat1 = Thermostat(uuid=uuid.uuid4())
-        ch1 = Chair(uuid=uuid.uuid4())
-        h1 = Human(uuid=uuid.uuid4())
-        w1 = Wardrobe(uuid=uuid.uuid4())
-
-        self.system.put_entity(table1, (0, 0, 0))
         self.system.put_entity(light1, (19, 14, 9))
-        self.system.put_entity(ac1, (37, 10, 9), unit_orientation=(-1, 0, 0))
-        self.system.put_entity(sd1, (10, 10, 11), unit_orientation=(0, 0, -1))
-        self.system.put_entity(thermostat1, (30, 0, 5))
-        self.system.put_entity(ch1, (4, 4, 0), unit_orientation=(0, -1, 0))
-        self.system.put_entity(h1, (25, 20, 0), unit_orientation=(0, -1, 0))
-        self.system.put_entity(w1, (0, 20, 0), unit_orientation=(1, 0, 0))
+        light2 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
+        self.system.put_entity(light2, (9, 14, 9))
+        light3 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
+        self.system.put_entity(light3, (29, 14, 9))
 
-        print(dill.check(self.system))
+        # Multiprocessing Init
+        mp = {}
+        mp_manager = Manager()
+        mp_space_factors = mp_manager.dict(self.system.space.space_factors)
 
-        # light1 = Light(uuid=uuid.uuid4())
-        # light2 = Light(uuid=uuid.uuid4())
-        #
-        # light1_q = Queue()
-        # light1_ppipe, light1_cpipe = Pipe()
-        # light1_p = Process(target=light1.run, args=(light1_cpipe,))
-        # light2_q = Queue()
-        # light2_ppipe, light2_cpipe = Pipe()
-        # light2_p = Process(target=light2.run, args=(light2_cpipe,))
-        #
-        # light1_p.start()
-        # light2_p.start()
-        #
-        # light1_ppipe.send('uuid')
-        # print(light1_ppipe.recv())
-        #
-        # time.sleep(5)
-        #
-        # light1_ppipe.send(None)
-        # light2_ppipe.send(None)
+        for entity, dimension, orientation in self.system.entities:
+            if entity.runnable is True:
+                p_pipe, c_pipe = Pipe()
+                process = Process(target=entity.run, args=(mp_space_factors, c_pipe))
+                mp[entity] = {
+                    'p_pipe': p_pipe,
+                    'c_pipe': c_pipe,
+                    'process': process,
+                }
+
+        # Multiprocessing Start
+        for entity in mp:
+            mp[entity]['process'].start()
+
+        # Multiprocessing Do
+        for entity_process in mp:
+            task = Task(command=Command.ACTIVE)
+            mp[entity_process]['p_pipe'].send(task)
+        for entity_process in mp:
+            task = Task(command=Command.GET_INFO)
+            mp[entity_process]['p_pipe'].send(task)
+            print(mp[entity_process]['p_pipe'].recv())
+
+        # Multiprocessing End
+        for entity_process in mp:
+            task = Task(command=Command.END)
+            mp[entity_process]['p_pipe'].send(task)
+            mp[entity_process]['process'].join()
+
+        # Plotter.plot_scatter_3d(
+        #     self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
+        #     zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
+        #     filename=os.path.join(test_settings.actual_path, test_name + '_matter.html'),
+        #     auto_open=True,
+        #     opacity=1
+        # )
+        # Plotter.plot_scatter_3d(
+        #     mynp.char.mod('hsl(%d,%d%,%d%)', (
+        #         self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE],
+        #         self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION],
+        #         self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS]
+        #     )),
+        #     zero_value=0,
+        #     filename=os.path.join(test_settings.actual_path, test_name + '_luminosity.html'),
+        #     auto_open=True,
+        #     opacity=1
+        # )
 
     def test_main_1(self):
         test_name = 'test_main_1'
@@ -234,10 +253,10 @@ class TestMain(TestCase):
         self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS][0:9, 0:3,
         0:3] = 0
 
-        luminosity = mynp.char.mod('hsl(%d,%d%,%d%)', (
-        self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE],
-        self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION],
-        self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS]))
+        luminosity = npx.char.mod('hsl(%d,%d%,%d%)', (
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE],
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION],
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS]))
 
         Plotter.plot_scatter_3d(
             array3d=luminosity,
