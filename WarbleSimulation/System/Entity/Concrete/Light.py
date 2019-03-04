@@ -1,8 +1,10 @@
-import time
+import json
 
 import numpy as np
 
+from WarbleSimulation import settings
 from WarbleSimulation.System.Entity.Concrete import Concrete
+from WarbleSimulation.System.Entity.Task import Command
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 
@@ -15,6 +17,8 @@ class Light(Concrete):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS)
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
+        self.runnable = True
+        self.task_active = False
 
     def get_default_shape(self):
         matter = self.matter_type.value
@@ -32,42 +36,38 @@ class Light(Concrete):
 
         return shape
 
-    # def run(self, task_queue=None):
-    #     if task_queue is None or not isinstance(task_queue, Queue):
-    #         return
-    #
-    #     while True:
-    #         task = task_queue.get()
-    #
-    #         if task is None:
-    #             print('Light \'%s\' quit. Bye!' % self.uuid)
-    #             break
-    #         else:
-    #             print('Light \'%s\' executing task: %s ...' % (self.uuid, task))
-    #             if task == 'wait':
-    #                 time.sleep(3)
-    #             elif task == 'uuid':
-    #
-    #             elif task == 'dimension':
-    #                 pass
-    #             print('Light \'%s\' task done' % self.uuid)
-
-    def run(self, task_pipe=None):
-        if task_pipe is None:
+    def run(self, mp_space_factors, mp_task_pipe):
+        if mp_space_factors is None and mp_task_pipe is None:
             return
 
         while True:
-            task = task_pipe.recv()
-            if task is None:
-                print('Light \'%s\' quit. Bye!' % self.uuid)
-                task_pipe.close()
-                break
-            else:
-                print('Light \'%s\' executing task: %s ...' % (self.uuid, task))
-                if task == 'wait':
-                    time.sleep(3)
-                elif task == 'uuid':
-                    task_pipe.send(self.uuid)
-                elif task == 'dimension':
-                    task_pipe.send(self.dimension)
-                print('Light \'%s\' task done' % self.uuid)
+            if mp_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
+                task = mp_task_pipe.recv()
+                if task.command == Command.END:
+                    self.task_active = False
+                    mp_task_pipe.close()
+                    break
+                elif task.command == Command.ACTIVE:
+                    self.task_active = True
+                elif task.command == Command.DEACTIVATE:
+                    self.task_active = False
+                else:
+                    if self.task_active:
+                        mp_task_pipe.send(self.handle_task(task))
+
+    def handle_task(self, task):
+        if task.command == Command.GET_INFO:
+            response = {
+                'uuid': str(self.uuid),
+                'identifier': type(self).identifier,
+                'type': {
+                    'actuator': [
+                        'LUMINOSITY'
+                    ],
+                    'sensor': [],
+                    'accessor': []
+                },
+            }
+            return json.dumps(response)
+        else:
+            return None
