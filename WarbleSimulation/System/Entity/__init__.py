@@ -16,5 +16,10 @@ class Entity(ABC):
         self.action = None
         self.intent = None
 
+        self.runnable = False
+
     def get_shape(self):
         return None
+
+    def run(self):
+        pass
