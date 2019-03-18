@@ -1,4 +1,3 @@
-import filecmp
 import os
 import uuid
 from multiprocessing import Process, Pipe, Queue
@@ -122,8 +121,9 @@ class TestMain(TestCase):
         # Compare Space Factor Matter
         np.save(os.path.join(test_settings.actual_path, test_name + '_space_matter.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_matter.npy')))
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
 
         # Plot
         Plotter.plot_scatter_3d(
@@ -157,8 +157,9 @@ class TestMain(TestCase):
         # Compare Space Factor Matter
         np.save(os.path.join(test_settings.actual_path, test_name + '_space_matter.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_matter.npy')))
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
 
         # Plot
         Plotter.plot_scatter_3d(
@@ -225,24 +226,33 @@ class TestMain(TestCase):
         np.save(os.path.join(test_settings.actual_path, test_name + '_space_air_z.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.Z])
 
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_matter.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_temperature.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_temperature.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_humidity.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_humidity.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_hue.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_hue.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_saturation.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_saturation.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_brightness.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_brightness.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_air_x.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_air_x.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_air_y.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_air_y.npy')))
-        self.assertTrue(filecmp.cmp(os.path.join(test_settings.expected_path, test_name + '_space_air_z.npy'),
-                                    os.path.join(test_settings.actual_path, test_name + '_space_air_z.npy')))
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_temperature.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_humidity.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.HUMIDITY][SpaceFactor.Humidity.HUMIDITY])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_hue.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_saturation.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_brightness.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_air_x.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.X])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_air_y.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.Y])
+        np.testing.assert_array_equal(
+            np.load(os.path.join(test_settings.expected_path, test_name + '_space_air_z.npy')),
+            self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.Z])
 
         # Plot
         Plotter.plot_scatter_3d(
