@@ -4,7 +4,7 @@ import numpy as np
 
 from WarbleSimulation import settings
 from WarbleSimulation.System.Entity.Concrete import Concrete
-from WarbleSimulation.System.Entity.Task import Command
+from WarbleSimulation.System.Entity.Task import Command, TaskResponse, Status
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 
@@ -36,15 +36,24 @@ class Light(Concrete):
 
         return shape
 
-    def run(self, mp_space_factors, mp_task_pipe):
-        if mp_space_factors is None and mp_task_pipe is None:
+    def run(self, result_queue, mp_task_pipe):
+        if result_queue is None and mp_task_pipe is None:
             return
 
         while True:
-            if mp_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
+            # TODO still need much definition and design decisions
+
+            # TODO do the actuator action
+            if result_queue is not None:
+                pass
+
+            # Do the submitted Task
+            if mp_task_pipe is not None and mp_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
                 task = mp_task_pipe.recv()
+                print(task.command)
                 if task.command == Command.END:
                     self.task_active = False
+                    mp_task_pipe.send(TaskResponse(Status.OK, None))
                     mp_task_pipe.close()
                     break
                 elif task.command == Command.ACTIVE:
