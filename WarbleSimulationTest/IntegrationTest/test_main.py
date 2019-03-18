@@ -1,7 +1,7 @@
 import filecmp
 import os
 import uuid
-from multiprocessing import Process, Manager, Pipe
+from multiprocessing import Process, Pipe, Queue
 from unittest import TestCase
 
 import WarbleSimulation.System.SpaceFactor as SpaceFactor
@@ -45,13 +45,12 @@ class TestMain(TestCase):
 
         # Multiprocessing Init
         mp = {}
-        mp_manager = Manager()
-        mp_space_factors = mp_manager.dict(self.system.space.space_factors)
+        result_queue = Queue()
 
         for entity, dimension, orientation in self.system.entities:
             if entity.runnable is True:
                 p_pipe, c_pipe = Pipe()
-                process = Process(target=entity.run, args=(mp_space_factors, c_pipe))
+                process = Process(target=entity.run, args=(result_queue, c_pipe))
                 mp[entity] = {
                     'p_pipe': p_pipe,
                     'c_pipe': c_pipe,
