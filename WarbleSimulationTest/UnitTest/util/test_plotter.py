@@ -21,4 +21,5 @@ class TestPlotter(TestCase):
         space_factor_matter[60:80, :, 15:20] = 3
 
         Plotter.plotly_plot_scatter_3d(space_factor_matter, 2,
-                                       filename=os.path.join(test_settings.actual_path, '3d-scatter-colorscale.html'))
+                                       filename=os.path.join(test_settings.actual_path, '3d-scatter-colorscale.html'),
+                                       auto_open=False)
