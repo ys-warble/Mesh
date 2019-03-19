@@ -3,13 +3,28 @@ from unittest import TestCase
 import numpy as np
 
 import WarbleSimulation.util.numpy_ext as npx
+from WarbleSimulation.util import Logger
+from WarbleSimulationTest import test_settings
 
 
 class TestNumpyExt(TestCase):
-    def test_char_mod_valid(self):
-        test_name = 'test_char_mod_valid'
-        print('===== Running %s =====' % test_name)
+    @classmethod
+    def setUpClass(cls):
+        cls.logger = Logger.get_logger(__name__)
 
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
+    def setUp(self):
+        self.logger.info('')
+        self.logger.info(test_settings.start_title_format(self._testMethodName))
+
+    def tearDown(self):
+        self.logger.info(test_settings.end_title_format(self._testMethodName))
+        self.logger.info('')
+
+    def test_char_mod_valid(self):
         dimension = (5, 5, 5)
         a = np.zeros(dimension)
         b = np.ones(dimension)
@@ -20,9 +35,6 @@ class TestNumpyExt(TestCase):
         self.assertTrue(np.array_equal(np.full(dimension, 'hsl(0,1%)'), c))
 
     def test_char_mod_invalid(self):
-        test_name = 'test_char_mod_valid'
-        print('===== Running %s =====' % test_name)
-
         self.assertEqual(None, npx.char.mod('hsl(%)', ()))
 
         a = np.zeros((5, 5, 5))

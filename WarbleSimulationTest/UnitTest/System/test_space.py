@@ -2,10 +2,24 @@ from unittest import TestCase
 
 from WarbleSimulation.System.Space import Space
 from WarbleSimulation.System.SpaceFactor import SpaceFactor
+from WarbleSimulation.util import Logger
+from WarbleSimulationTest import test_settings
 
 
 class TestSpace(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.logger = Logger.get_logger(__name__)
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
     def setUp(self):
+        self.logger.info('')
+        self.logger.info(test_settings.start_title_format(self._testMethodName))
+
+        # Create default space
         self.dimension = (5, 5, 5)
         self.resolution = 4
 
@@ -14,11 +28,10 @@ class TestSpace(TestCase):
                            resolution=self.resolution)
 
     def tearDown(self):
-        pass
+        self.logger.info(test_settings.end_title_format(self._testMethodName))
+        self.logger.info('')
 
     def test_constructor_valid_1(self):
-        print('===== Running test_constructor_valid_1 =====')
-
         def func1():
             return Space(dimension=self.dimension,
                          resolution=self.resolution,
@@ -32,8 +45,6 @@ class TestSpace(TestCase):
         self.assertTrue(isinstance(func2(), Space))
 
     def test_constructor_invalid_1(self):
-        print('===== Running test_constructor_invalid_1 =====')
-
         def func2():
             space = Space(dimension=('5', 5, 5),
                           resolution=self.resolution,
@@ -66,8 +77,6 @@ class TestSpace(TestCase):
         self.assertRaises(IndexError, func6)
 
     def test_add_space_factor_valid_single(self):
-        print('===== Running test_add_space_factor_valid_single =====')
-
         total_space_factor = len(self.space.space_factors)
         space_factor_types = list(self.space.space_factors.keys())
 
@@ -85,8 +94,6 @@ class TestSpace(TestCase):
                 self.assertEqual(tuple([i * self.resolution for i in self.dimension]), d.shape)
 
     def test_add_space_factor_valid_list(self):
-        print('===== Running test_add_space_factor_valid_list =====')
-
         total_space_factor = len(self.space.space_factors)
         space_factor_types = list(self.space.space_factors.keys())
 
@@ -105,8 +112,6 @@ class TestSpace(TestCase):
                 self.assertEqual(tuple([i * self.resolution for i in self.dimension]), d.shape)
 
     def test_add_space_factor_invalid_single(self):
-        print('===== Running test_add_space_factor_invalid_single =====')
-
         def func1():
             self.space.add_space_factor(1)
 
@@ -117,8 +122,6 @@ class TestSpace(TestCase):
         self.assertRaises(TypeError, func2)
 
     def test_add_space_factor_invalid_list(self):
-        print('===== Running test_add_space_factor_invalid_list =====')
-
         def func1():
             self.space.add_space_factor([1, 2, 3])
 
