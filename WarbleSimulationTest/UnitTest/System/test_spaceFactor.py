@@ -32,8 +32,8 @@ class TestSpaceFactor(TestCase):
 
         total_enum = len(space_factors)
 
-        print('Total SpaceFactor = %d' % total_enum)
-        print('List = %s' % [i for i in space_factors])
+        self.logger.info('Total SpaceFactor = %d' % total_enum)
+        self.logger.info('List = %s' % [i for i in space_factors])
 
         self.assertEqual(total_enum, 5)
 
@@ -64,11 +64,11 @@ class TestSpaceFactor(TestCase):
     # generate()
     def test_generate_valid(self):
         for space_factor_type in SpaceFactor.SpaceFactor:
-            print(space_factor_type)
+            self.logger.info(space_factor_type)
 
             space_factor = SpaceFactor.generate(space_factor_type, self.dimension, self.resolution)
 
-            print('- Testing space_factor has correct keys ...')
+            self.logger.info('- Testing space_factor has correct keys ...')
             if space_factor_type == SpaceFactor.SpaceFactor.MATTER:
                 self.assertEqual(list(space_factor.keys()), [i for i in SpaceFactor.Matter])
             elif space_factor_type == SpaceFactor.SpaceFactor.TEMPERATURE:
@@ -82,8 +82,8 @@ class TestSpaceFactor(TestCase):
             else:
                 raise Exception('Unknown SpaceFactor: %s' % space_factor_type)
 
-            print('- Testing each space factor matrices ...')
+            self.logger.info('- Testing each space factor matrices ...')
             for key, value in space_factor.items():
                 self.assertEqual(value.shape, tuple([i * self.resolution for i in self.dimension]))
 
-            print()
+            self.logger.info()
