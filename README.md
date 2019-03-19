@@ -32,4 +32,5 @@ _TODO define_
 _TODO define_
 
 ## Resources
-**Docker Repository (Tests)**: https://hub.docker.com/r/yosefsaputra/warblesimtest
+**GitHub:** https://github.com/yosefsaputra/WarbleSimulation  
+**Docker (Tests)**: https://hub.docker.com/r/yosefsaputra/warblesimtest
