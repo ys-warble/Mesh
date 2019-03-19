@@ -28,6 +28,7 @@ class TestMain(TestCase):
 
     def test_main(self):
         test_name = 'test_main'
+        print('===== Running %s =====' % test_name)
 
         # Create System
         self.system = System('MyNewSystem')
@@ -69,7 +70,6 @@ class TestMain(TestCase):
         for entity_process in mp:
             task = Task(command=Command.GET_INFO)
             mp[entity_process]['p_pipe'].send(task)
-            print(mp[entity_process]['p_pipe'].recv())
 
         # Multiprocessing End
         for entity_process in mp:
@@ -77,27 +77,9 @@ class TestMain(TestCase):
             mp[entity_process]['p_pipe'].send(task)
             mp[entity_process]['process'].join()
 
-        # Plotter.plot_scatter_3d(
-        #     self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
-        #     zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-        #     filename=os.path.join(test_settings.actual_path, test_name + '_matter.html'),
-        #     auto_open=True,
-        #     opacity=1
-        # )
-        # Plotter.plot_scatter_3d(
-        #     mynp.char.mod('hsl(%d,%d%,%d%)', (
-        #         self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE],
-        #         self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION],
-        #         self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS]
-        #     )),
-        #     zero_value=0,
-        #     filename=os.path.join(test_settings.actual_path, test_name + '_luminosity.html'),
-        #     auto_open=True,
-        #     opacity=1
-        # )
-
     def test_main_1(self):
         test_name = 'test_main_1'
+        print('===== Running %s =====' % test_name)
 
         # Create System
         self.system = System('MyNewSystem')
@@ -134,6 +116,7 @@ class TestMain(TestCase):
 
     def test_main_2(self):
         test_name = 'test_main_2'
+        print('===== Running %s =====' % test_name)
 
         # Create System
         self.system = System('MyNewSystem')
@@ -170,6 +153,7 @@ class TestMain(TestCase):
 
     def test_main_3(self):
         test_name = 'test_main_3'
+        print('===== Running %s =====' % test_name)
 
         # Create System
         self.system = System('MyNewSystem')

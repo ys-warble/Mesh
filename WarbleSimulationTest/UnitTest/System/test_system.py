@@ -15,13 +15,22 @@ class TestSystem(TestCase):
         pass
 
     def test_system_init(self):
+        test_name = 'test_system_init'
+        print('===== Running %s =====' % test_name)
+
         self.assertEqual(self.system_name, self.system.name)
 
     def test_put_space(self):
+        test_name = 'test_put_space'
+        print('===== Running %s =====' % test_name)
+
         self.system.put_space(dimension=self.dimension, resolution=self.resolution, space_factor_types=[])
 
     def test_put_entity(self):
-        self.fail()
+        test_name = 'test_put_entity'
+        print('===== Running %s =====' % test_name)
+
+        self.system.put_entity()
 
     def undefined_cases(self):
         self.system.put_space(dimension=self.dimension)

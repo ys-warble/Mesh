@@ -9,6 +9,9 @@ from WarbleSimulationTest import test_settings
 
 class TestPlotter(TestCase):
     def test_plotly_plot_scatter_3d(self):
+        test_name = 'test_plotly_plot_scatter_3d'
+        print('===== Running %s =====' % test_name)
+
         dimension = (20, 10, 5)
         resolution = 4
 
