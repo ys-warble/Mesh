@@ -86,4 +86,4 @@ class TestSpaceFactor(TestCase):
             for key, value in space_factor.items():
                 self.assertEqual(value.shape, tuple([i * self.resolution for i in self.dimension]))
 
-            self.logger.info()
+            self.logger.info('')
