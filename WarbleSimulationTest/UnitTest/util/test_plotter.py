@@ -9,6 +9,9 @@ from WarbleSimulationTest import test_settings
 
 class TestPlotter(TestCase):
     def test_plotly_plot_scatter_3d(self):
+        test_name = 'test_plotly_plot_scatter_3d'
+        print('===== Running %s =====' % test_name)
+
         dimension = (20, 10, 5)
         resolution = 4
 
@@ -21,4 +24,5 @@ class TestPlotter(TestCase):
         space_factor_matter[60:80, :, 15:20] = 3
 
         Plotter.plotly_plot_scatter_3d(space_factor_matter, 2,
-                                       filename=os.path.join(test_settings.actual_path, '3d-scatter-colorscale.html'))
+                                       filename=os.path.join(test_settings.actual_path, '3d-scatter-colorscale.html'),
+                                       auto_open=False)

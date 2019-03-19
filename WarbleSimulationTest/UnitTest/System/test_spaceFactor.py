@@ -31,7 +31,7 @@ class TestSpaceFactor(TestCase):
     def test_matter_type_enum_total(self):
         print('===== Running test_matter_type_enum_total =====')
         total_enum = len(SpaceFactor.MatterType)
-        self.assertEqual(total_enum, 11)
+        self.assertEqual(total_enum, 12)
 
     def test_temperature_enum_total(self):
         print('===== Running test_temperature_enum_total =====')

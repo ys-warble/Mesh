@@ -16,5 +16,13 @@ class Entity(ABC):
         self.action = None
         self.intent = None
 
+        self.runnable = False
+
     def get_shape(self):
         return None
+
+    def run(self, mp_space_factors, mp_task_pipe):
+        pass
+
+    def handle_task(self, task):
+        raise NotImplementedError

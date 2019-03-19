@@ -67,12 +67,12 @@ class Concrete(Entity):
         self.matter_type = matter_type
 
     def get_shape(self):
-        return self.multiply_shape()
+        return self.get_multiplied_shape()
 
     def get_default_shape(self):
         return None
 
-    def multiply_shape(self):
+    def get_multiplied_shape(self):
         if self.get_default_shape() is None:
             return None
         else:
