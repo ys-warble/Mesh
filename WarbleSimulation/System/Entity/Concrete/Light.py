@@ -50,7 +50,6 @@ class Light(Concrete):
             # Do the submitted Task
             if mp_task_pipe is not None and mp_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
                 task = mp_task_pipe.recv()
-                print(task.command)
                 if task.command == Command.END:
                     self.task_active = False
                     mp_task_pipe.send(TaskResponse(Status.OK, None))
