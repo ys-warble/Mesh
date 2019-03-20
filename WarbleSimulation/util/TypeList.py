@@ -4,6 +4,6 @@ class TypeList(list):
         self.type = type
 
     def append(self, new_item):
-        if not isinstance(object, self.type):
+        if not isinstance(new_item, self.type):
             raise TypeError('item is not of type %s' % self.type)
-        self.append(new_item)
+        super(TypeList, self).append(new_item)
