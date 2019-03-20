@@ -22,7 +22,7 @@ class Light(Concrete):
         self.runnable = True
         self.task_active = False
 
-        self.power_management.power_inputs.append(PowerInput())
+        self.power_management.power_inputs.append(PowerInput(self))
 
     def get_default_shape(self):
         matter = self.matter_type.value
