@@ -250,14 +250,14 @@ class TestMain(TestCase):
 
         # Multiprocessing Do
         for entity_process in mp:
-            task = Task(command=Command.ACTIVE)
+            task = Task(task_name=Command.ACTIVE)
             mp[entity_process]['p_pipe'].send(task)
         for entity_process in mp:
-            task = Task(command=Command.GET_INFO)
+            task = Task(task_name=Command.GET_INFO)
             mp[entity_process]['p_pipe'].send(task)
 
         # Multiprocessing End
         for entity_process in mp:
-            task = Task(command=Command.END)
+            task = Task(task_name=Command.END)
             mp[entity_process]['p_pipe'].send(task)
             mp[entity_process]['process'].join()
