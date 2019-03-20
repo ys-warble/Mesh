@@ -37,7 +37,7 @@ class PowerOutput:
         self.power_wires = TypeList(PowerWire)
 
 
-class PowerManagement:
+class Powered:
     def __init__(self):
         self.power_inputs = TypeList(PowerInput)
         self.power_outputs = TypeList(PowerOutput)

@@ -1,7 +1,7 @@
 import numpy as np
 
-from WarbleSimulation.System.Entity.Basic.Power import PowerInput, PowerOutput
 from WarbleSimulation.System.Entity.Concrete import Concrete
+from WarbleSimulation.System.Entity.Function.Powered import PowerInput, PowerOutput
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 

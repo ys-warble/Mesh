@@ -3,7 +3,7 @@ from WarbleSimulation.System.Entity.Channel import Channel
 
 class PowerWire(Channel):
     def __init__(self, power_output, power_input):
-        from WarbleSimulation.System.Entity.Basic.Power import PowerInput, PowerOutput
+        from WarbleSimulation.System.Entity.Function.Powered import PowerInput, PowerOutput
 
         super().__init__()
 

@@ -3,8 +3,8 @@ import json
 import numpy as np
 
 from WarbleSimulation import settings
-from WarbleSimulation.System.Entity.Basic.Power import PowerOutput
 from WarbleSimulation.System.Entity.Concrete import Concrete
+from WarbleSimulation.System.Entity.Function.Powered import PowerOutput
 from WarbleSimulation.System.Entity.Task import TaskResponse, Command, Status
 from WarbleSimulation.System.SpaceFactor import MatterType
 

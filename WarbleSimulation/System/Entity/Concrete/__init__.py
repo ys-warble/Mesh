@@ -1,7 +1,7 @@
 import numpy as np
 
 from WarbleSimulation.System.Entity import Entity
-from WarbleSimulation.System.Entity.Basic.Power import PowerManagement
+from WarbleSimulation.System.Entity.Function.Powered import Powered
 
 
 def transform_shape(entity_shape, from_direction, to_direction):
@@ -67,7 +67,7 @@ class Concrete(Entity):
             [Concrete.default_dimension[i] * self.dimension_x[i] for i in range(len(Concrete.default_dimension))])
         self.matter_type = matter_type
 
-        self.power_management = PowerManagement()
+        self.power_management = Powered()
 
     def get_shape(self):
         return self.get_multiplied_shape()
