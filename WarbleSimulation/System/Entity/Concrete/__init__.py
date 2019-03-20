@@ -1,7 +1,7 @@
 import numpy as np
 
 from WarbleSimulation.System.Entity import Entity
-from WarbleSimulation.System.Entity.Basic.PowerManagement import PowerManagement
+from WarbleSimulation.System.Entity.Basic.Power import PowerManagement
 
 
 def transform_shape(entity_shape, from_direction, to_direction):
