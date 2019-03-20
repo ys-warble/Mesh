@@ -3,6 +3,7 @@ import json
 import numpy as np
 
 from WarbleSimulation import settings
+from WarbleSimulation.System.Entity.Basic.Power import PowerInput
 from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Task import Command, TaskResponse, Status
 from WarbleSimulation.System.SpaceFactor import MatterType
@@ -17,8 +18,11 @@ class Light(Concrete):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS)
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
+
         self.runnable = True
         self.task_active = False
+
+        self.power_management.power_inputs.append(PowerInput())
 
     def get_default_shape(self):
         matter = self.matter_type.value
