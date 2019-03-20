@@ -1,7 +1,6 @@
 import numpy as np
 
 from WarbleSimulation.System.Entity import Entity
-from WarbleSimulation.System.Entity.Function.Powered import Powered
 
 
 def transform_shape(entity_shape, from_direction, to_direction):
@@ -67,7 +66,7 @@ class Concrete(Entity):
             [Concrete.default_dimension[i] * self.dimension_x[i] for i in range(len(Concrete.default_dimension))])
         self.matter_type = matter_type
 
-        self.power_management = Powered()
+        self.functions = dict()
 
     def get_shape(self):
         return self.get_multiplied_shape()
@@ -83,8 +82,19 @@ class Concrete(Entity):
                 [int(self.dimension[i] / type(self).default_dimension[i]) for i in range(len(self.dimension))])
             return np.kron(self.get_default_shape(), np.ones(multiplier))
 
-    def get_power_output(self, index=0):
-        return self.power_management.get_power_output(index)
+    def has_function(self, function):
+        if function in self.functions and self.functions[function] is not None:
+            return True
+        else:
+            return False
 
-    def get_power_input(self, index=0):
-        return self.power_management.get_power_input(index)
+    def get_function(self, function):
+        if self.has_function(function):
+            return self.functions[function]
+        else:
+            return None
+
+    def __str__(self):
+        return 'Concrete(uuid=.%s,dim=%s,matter=%s)' % (str(self.uuid)[-8:],
+                                                        self.dimension,
+                                                        self.matter_type)
