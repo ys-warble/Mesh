@@ -1,7 +1,13 @@
 from enum import Enum
 
 
-class Command(Enum):
+class TaskLevel(Enum):
+    BASE = 0
+    SYSTEM = 100
+    ENTITY = 200
+
+
+class TaskName(Enum):
     START = 0
     END = 1
 
@@ -17,14 +23,12 @@ class Status(Enum):
 
 
 class Task:
-    def __init__(self, command, *args, **kwargs):
-        self.command = command
-
-    def set_command(self, command):
-        self.command = command
+    def __init__(self, level, name, *args, **kwargs):
+        self.level = level
+        self.name = name
 
     def __str__(self):
-        return "Task(%s)" % self.command
+        return "Task(%s,%s)" % (self.level, self.name)
 
 
 class TaskResponse:
