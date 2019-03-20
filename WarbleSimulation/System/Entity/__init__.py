@@ -26,3 +26,6 @@ class Entity(ABC):
 
     def handle_task(self, task):
         raise NotImplementedError
+
+    def __str__(self):
+        return 'Entity(uuid=.%s)' % str(self.uuid)[-8:]
