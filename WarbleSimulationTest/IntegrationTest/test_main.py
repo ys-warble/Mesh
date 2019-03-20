@@ -23,13 +23,23 @@ from WarbleSimulationTest import test_settings
 
 
 class TestMain(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.logger = Logger.get_logger(__name__)
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
     def setUp(self):
-        self.logger = Logger.get_logger(__name__)
+        self.logger.info('')
+        self.logger.info(test_settings.start_title_format(self._testMethodName))
+
+    def tearDown(self):
+        self.logger.info(test_settings.end_title_format(self._testMethodName))
+        self.logger.info('')
 
     def test_main(self):
-        test_name = 'test_main'
-        print('===== Running %s =====' % test_name)
-
         # Create System
         self.system = System('MyNewSystem')
 
@@ -78,9 +88,6 @@ class TestMain(TestCase):
             mp[entity_process]['process'].join()
 
     def test_main_1(self):
-        test_name = 'test_main_1'
-        print('===== Running %s =====' % test_name)
-
         # Create System
         self.system = System('MyNewSystem')
 
@@ -101,23 +108,20 @@ class TestMain(TestCase):
         self.system.put_entity(wall_4, (19.75, 0.25, 0))
 
         # Compare Space Factor Matter
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_matter.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_matter.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_matter.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
 
         # Plot
         Plotter.plot_scatter_3d(
             array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
             zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-            filename=os.path.join(test_settings.actual_path, test_name + '_matter_plot.html'),
+            filename=os.path.join(test_settings.actual_path, self._testMethodName + '_matter_plot.html'),
             auto_open=test_settings.auto_open)
 
     def test_main_2(self):
-        test_name = 'test_main_2'
-        print('===== Running %s =====' % test_name)
-
         # Create System
         self.system = System('MyNewSystem')
 
@@ -138,23 +142,20 @@ class TestMain(TestCase):
         self.system.put_entity(thermostat1, (30, 0, 5))
 
         # Compare Space Factor Matter
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_matter.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_matter.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_matter.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
 
         # Plot
         Plotter.plot_scatter_3d(
             array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
             zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-            filename=os.path.join(test_settings.actual_path, test_name + '_matter_plot.html'),
+            filename=os.path.join(test_settings.actual_path, self._testMethodName + '_matter_plot.html'),
             auto_open=test_settings.auto_open)
 
     def test_main_3(self):
-        test_name = 'test_main_3'
-        print('===== Running %s =====' % test_name)
-
         # Create System
         self.system = System('MyNewSystem')
 
@@ -182,67 +183,59 @@ class TestMain(TestCase):
         self.system.put_entity(w1, (0, 20, 0), unit_orientation=(1, 0, 0))
 
         # Compare Space Factors
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_matter.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_matter.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_temperature.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_temperature.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][
                     SpaceFactor.Temperature.TEMPERATURE])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_humidity.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_humidity.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.HUMIDITY][SpaceFactor.Humidity.HUMIDITY])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_hue.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_hue.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_saturation.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_saturation.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_brightness.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_brightness.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_air_x.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_air_x.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.X])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_air_y.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_air_y.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.Y])
-
-        np.save(os.path.join(test_settings.actual_path, test_name + '_space_air_z.npy'),
+        np.save(os.path.join(test_settings.actual_path, self._testMethodName + '_space_air_z.npy'),
                 self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.Z])
 
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_matter.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_matter.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_temperature.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_temperature.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_humidity.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_humidity.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.HUMIDITY][SpaceFactor.Humidity.HUMIDITY])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_hue.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_hue.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_saturation.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_saturation.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_brightness.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_brightness.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_air_x.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_air_x.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.X])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_air_y.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_air_y.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.Y])
         np.testing.assert_array_equal(
-            np.load(os.path.join(test_settings.expected_path, test_name + '_space_air_z.npy')),
+            np.load(os.path.join(test_settings.expected_path, self._testMethodName + '_space_air_z.npy')),
             self.system.space.space_factors[SpaceFactor.SpaceFactor.AIR_MOVEMENT][SpaceFactor.AirMovement.Z])
 
         # Plot
         Plotter.plot_scatter_3d(
             array3d=self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][SpaceFactor.Matter.MATTER],
             zero_value=SpaceFactor.MatterType.ATMOSPHERE.value,
-            filename=os.path.join(test_settings.actual_path, test_name + '_matter_plot.html'),
+            filename=os.path.join(test_settings.actual_path, self._testMethodName + '_matter_plot.html'),
             auto_open=test_settings.auto_open)
 
         x_dark, y_dark, z_dark = (self.system.space.space_factors[SpaceFactor.SpaceFactor.MATTER][
@@ -264,7 +257,7 @@ class TestMain(TestCase):
         Plotter.plot_scatter_3d(
             array3d=luminosity,
             zero_value=-1,
-            filename=os.path.join(test_settings.actual_path, test_name + '_luminosity_plot.html'),
+            filename=os.path.join(test_settings.actual_path, self._testMethodName + '_luminosity_plot.html'),
             auto_open=test_settings.auto_open,
             opacity=0.6
         )

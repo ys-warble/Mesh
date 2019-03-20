@@ -2,26 +2,31 @@ import logging
 
 from WarbleSimulation import settings
 
+logger = None
+
 
 def get_logger(name):
     logging_level = settings.LOGGING_LEVEL
 
     # create logger
-    logger = logging.getLogger(name)
-    logger.setLevel(logging_level)
+    global logger
+    if logger is None or logger.name != name:
+        logger = logging.getLogger(name)
 
-    # create console handler and set level to debug
-    ch = logging.StreamHandler()
-    ch.setLevel(logging_level)
+        logger.setLevel(logging_level)
 
-    # create formatter
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        # create console handler and set level to debug
+        ch = logging.StreamHandler()
+        ch.setLevel(logging_level)
 
-    # add formatter to ch
-    ch.setFormatter(formatter)
+        # create formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    # add ch to logger
-    logger.addHandler(ch)
+        # add formatter to ch
+        ch.setFormatter(formatter)
+
+        # add ch to logger
+        logger.addHandler(ch)
 
     return logger
 

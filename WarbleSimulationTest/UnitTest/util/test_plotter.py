@@ -3,15 +3,28 @@ from unittest import TestCase
 
 import numpy as np
 
-from WarbleSimulation.util import Plotter
+from WarbleSimulation.util import Plotter, Logger
 from WarbleSimulationTest import test_settings
 
 
 class TestPlotter(TestCase):
-    def test_plotly_plot_scatter_3d(self):
-        test_name = 'test_plotly_plot_scatter_3d'
-        print('===== Running %s =====' % test_name)
+    @classmethod
+    def setUpClass(cls):
+        cls.logger = Logger.get_logger(__name__)
 
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
+    def setUp(self):
+        self.logger.info('')
+        self.logger.info(test_settings.start_title_format(self._testMethodName))
+
+    def tearDown(self):
+        self.logger.info(test_settings.end_title_format(self._testMethodName))
+        self.logger.info('')
+
+    def test_plotly_plot_scatter_3d(self):
         dimension = (20, 10, 5)
         resolution = 4
 
