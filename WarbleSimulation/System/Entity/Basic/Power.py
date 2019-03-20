@@ -1,5 +1,8 @@
 from enum import Enum
 
+from WarbleSimulation.System.Entity.Channel.PowerWire import PowerWire
+from WarbleSimulation.util.TypeList import TypeList
+
 
 class PowerType(Enum):
     ELECTRIC = 101
@@ -21,6 +24,8 @@ class PowerInput:
 
     def __init__(self, parent):
         self.parent = parent
+        self.power = ElectricPower(voltage=0)
+        self.power_wires = TypeList(PowerWire)
 
 
 class PowerOutput:
@@ -28,3 +33,5 @@ class PowerOutput:
 
     def __init__(self, parent):
         self.parent = parent
+        self.power = ElectricPower(voltage=0)
+        self.power_wires = TypeList(PowerWire)
