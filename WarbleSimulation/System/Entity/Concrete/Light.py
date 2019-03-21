@@ -42,42 +42,17 @@ class Light(Concrete):
 
         return shape
 
+    def send_task(self, task):
+        pass
 
-class LightCompute(Compute):
-    def __init__(self, light):
-        super().__init__()
-        self.light = light
-
-    def run(self, mp_task_pipe):
-        if mp_task_pipe is None:
-            return
-
-        while True:
-            # TODO still need much definition and design decisions
-
-            # Do the submitted Task
-            if mp_task_pipe is not None and mp_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
-                task = mp_task_pipe.recv()
-                if task.name == TaskName.END:
-                    self.light.task_active = False
-                    mp_task_pipe.send(TaskResponse(Status.OK, None))
-                    mp_task_pipe.close()
-                    break
-                elif task.name == TaskName.ACTIVE:
-                    self.light.task_active = True
-                    mp_task_pipe.send(TaskResponse(Status.OK, None))
-                elif task.name == TaskName.DEACTIVATE:
-                    self.light.task_active = False
-                    mp_task_pipe.send(TaskResponse(Status.OK, None))
-                else:
-                    if self.light.task_active:
-                        mp_task_pipe.send(self.handle_task(task))
+    def recv_task_resp(self):
+        pass
 
     def handle_task(self, task):
         if task.name == TaskName.GET_INFO:
-            response = {
-                'uuid': str(self.light.uuid),
-                'identifier': type(self.light).identifier,
+            info = {
+                'uuid': str(self.uuid),
+                'identifier': type(self).identifier,
                 'type': {
                     'actuator': [
                         'LUMINOSITY'
@@ -86,6 +61,41 @@ class LightCompute(Compute):
                     'accessor': []
                 },
             }
-            return TaskResponse(Status.OK, {'info': response})
+            task_response = TaskResponse(Status.OK, {'info': info})
         else:
-            return TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+            task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+
+        return task_response
+
+
+class LightCompute(Compute):
+    def __init__(self, entity):
+        super().__init__(entity)
+
+    def run(self):
+        if self.c_task_pipe is None:
+            return
+
+        while True:
+            # TODO still need much definition and design decisions
+
+            # Do the submitted Task
+            if self.c_task_pipe is not None and self.c_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
+                task = self.c_task_pipe.recv()
+                if task.name == TaskName.END:
+                    self.entity.task_active = False
+                    self.c_task_pipe.send(TaskResponse(Status.OK, None))
+                    self.c_task_pipe.close()
+                    break
+                elif task.name == TaskName.ACTIVE:
+                    self.entity.task_active = True
+                    self.c_task_pipe.send(TaskResponse(Status.OK, None))
+                elif task.name == TaskName.DEACTIVATE:
+                    self.entity.task_active = False
+                    self.c_task_pipe.send(TaskResponse(Status.OK, None))
+                else:
+                    if self.entity.task_active:
+                        self.c_task_pipe.send(self.handle_task(task))
+
+    def handle_task(self, task):
+        return self.entity.handle_task(task)

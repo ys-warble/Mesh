@@ -3,6 +3,7 @@ import numpy as np
 from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Powered import PowerOutput, Powered
+from WarbleSimulation.System.Entity.Task import TaskLevel, TaskName, TaskResponse, Status
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 
@@ -27,3 +28,40 @@ class PowerSupply(Concrete):
         shape = np.array([[[matter]]])
 
         return shape
+
+    def send_task(self, task):
+        if task.level == TaskLevel.ENTITY:
+            self.handle_task(task)
+
+        elif task.level == TaskLevel.SYSTEM:
+            if task.name == TaskName.ACTIVE:
+                self.task_active = True
+                self.task_response = TaskResponse(status=Status.OK, value=None)
+
+            elif task.name == TaskName.DEACTIVATE:
+                self.task_active = False
+                self.task_response = TaskResponse(status=Status.OK, value=None)
+        else:
+            self.task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+
+    def recv_task_resp(self):
+        temp = self.task_response
+        self.task_response = None
+        return temp
+
+    def handle_task(self, task):
+        if task.level == TaskLevel.ENTITY and task.name == TaskName.GET_INFO:
+            info = {
+                'uuid': str(self.uuid),
+                'identifier': type(self).identifier,
+                'type': {
+                    'actuator': [
+                        'POWER'
+                    ],
+                    'sensor': [],
+                    'accessor': []
+                },
+            }
+            self.task_response = TaskResponse(Status.OK, {'info': info})
+        else:
+            self.task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
