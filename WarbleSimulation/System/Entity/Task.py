@@ -53,3 +53,6 @@ class TaskResponse:
 
     def __str__(self):
         return "TaskResponse(%s, %s)" % (self.status, self.value)
+
+    def __eq__(self, other):
+        return self.status == other.status and self.value == self.value
