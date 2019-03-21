@@ -68,6 +68,8 @@ class Concrete(Entity):
 
         self.functions = dict()
 
+        self.task_response = None
+
     def get_shape(self):
         return self.get_multiplied_shape()
 
@@ -93,6 +95,15 @@ class Concrete(Entity):
             return self.functions[function]
         else:
             return None
+
+    def send_task(self, task):
+        raise NotImplementedError
+
+    def recv_task_resp(self):
+        raise NotImplementedError
+
+    def handle_task(self, task):
+        raise NotImplementedError
 
     def __str__(self):
         return 'Concrete(uuid=.%s,dim=%s,matter=%s)' % (str(self.uuid)[-8:],
