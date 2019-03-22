@@ -79,6 +79,9 @@ class Tasked(BaseFunction):
         self.last_task = None
         self.last_task_response = None
 
+    def eval(self):
+        raise NotImplementedError
+
     def send(self, task):
         def send_basic(t_task):
             return self.handle(t_task)
