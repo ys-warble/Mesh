@@ -38,3 +38,6 @@ class AirConditioner(Concrete):
         ])
 
         return shape
+
+    def define_functions(self):
+        pass

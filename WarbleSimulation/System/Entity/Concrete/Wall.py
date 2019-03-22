@@ -14,3 +14,6 @@ class Wall(Concrete):
 
     def get_default_shape(self):
         return None
+
+    def define_functions(self):
+        pass

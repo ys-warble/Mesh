@@ -22,16 +22,6 @@ class Light(Concrete):
 
         self.active = False
 
-        powered = Powered(self)
-        powered.power_inputs.append(PowerInput(self))
-        self.functions[Function.POWERED] = powered
-        self.functions[Function.TASKED] = LightTasked(self)
-        self.functions[Function.COMPUTE] = LightCompute(self)
-
-        # Required after adding functions
-        for key, val in self.functions.items():
-            val.eval()
-
     def get_default_shape(self):
         i = self.matter_type.value
         shape = np.array([
@@ -48,6 +38,13 @@ class Light(Concrete):
 
         return shape
 
+    def define_functions(self):
+        powered = Powered(self)
+        powered.power_inputs.append(PowerInput(self))
+        self.functions[Function.POWERED] = powered
+        self.functions[Function.TASKED] = LightTasked(self)
+        self.functions[Function.COMPUTE] = LightCompute(self)
+        
 
 class LightCompute(Compute):
     def __init__(self, entity):

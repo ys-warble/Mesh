@@ -19,16 +19,17 @@ class PowerSupply(Concrete):
 
         self.task_active = False
 
-        powered = Powered(self)
-        powered.power_outputs.append(PowerOutput(self))
-        self.functions[Function.POWERED] = powered
-        self.functions[Function.TASKED] = PowerSupplyTasked(self)
-
     def get_default_shape(self):
         i = self.matter_type.value
         shape = np.array([[[i]]])
 
         return shape
+
+    def define_functions(self):
+        powered = Powered(self)
+        powered.power_outputs.append(PowerOutput(self))
+        self.functions[Function.POWERED] = powered
+        self.functions[Function.TASKED] = PowerSupplyTasked(self)
 
 
 class PowerSupplyTasked(Tasked):
