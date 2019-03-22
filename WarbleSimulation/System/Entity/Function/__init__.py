@@ -3,6 +3,7 @@ from enum import Enum
 
 class Function(Enum):
     POWERED = 'POWERED'
+    TASKED = 'TASKED'
 
     COMPUTE = 'COMPUTE'
 

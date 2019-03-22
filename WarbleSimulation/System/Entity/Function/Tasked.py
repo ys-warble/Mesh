@@ -65,5 +65,21 @@ class TaskResponse:
 
 
 class Tasked(BaseFunction):
-    def __init__(self):
+    tasks = [
+        TaskName.GET_SYSTEM_INFO,
+        TaskName.ACTIVE,
+        TaskName.DEACTIVATE,
+        TaskName.GET_INFO,
+    ]
+
+    def __init__(self, entity):
         super().__init__()
+
+    def send(self, task):
+        raise NotImplementedError
+
+    def recv(self):
+        raise NotImplementedError
+
+    def handle(self, task):
+        raise NotImplementedError
