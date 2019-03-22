@@ -1,6 +1,7 @@
 from abc import ABC
 
 from WarbleSimulation.System.SpaceFactor import MatterType
+from WarbleSimulation.util import Logger
 
 
 class Entity(ABC):
@@ -17,6 +18,8 @@ class Entity(ABC):
         self.intent = None
 
         self.runnable = False
+
+        self.logger = Logger.get_logger(self.__class__.__name__)
 
     def get_shape(self):
         return None
