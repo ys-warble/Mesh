@@ -28,6 +28,10 @@ class Light(Concrete):
         self.functions[Function.TASKED] = LightTasked(self)
         self.functions[Function.COMPUTE] = LightCompute(self)
 
+        # Required after adding functions
+        for key, val in self.functions.items():
+            val.eval()
+
     def get_default_shape(self):
         i = self.matter_type.value
         shape = np.array([
