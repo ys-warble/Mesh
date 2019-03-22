@@ -17,7 +17,7 @@ class PowerSupply(Concrete):
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
-        self.task_active = False
+        self.active = False
 
     def get_default_shape(self):
         i = self.matter_type.value
@@ -34,20 +34,22 @@ class PowerSupply(Concrete):
 
 class PowerSupplyTasked(Tasked):
     def handle(self, task):
+        def get_info():
+            return {
+                'uuid': str(self.entity.uuid),
+                'identifier': type(self.entity).identifier,
+                'type': {
+                    'actuator': [
+                        'LUMINOSITY'
+                    ],
+                    'sensor': [],
+                    'accessor': []
+                }
+            }
+
         if task.level == TaskLevel.ENTITY:
             if task.name == TaskName.GET_INFO:
-                info = {
-                    'uuid': str(self.entity.uuid),
-                    'identifier': type(self.entity).identifier,
-                    'type': {
-                        'actuator': [
-                            'POWER'
-                        ],
-                        'sensor': [],
-                        'accessor': []
-                    },
-                }
-                task_response = TaskResponse(Status.OK, {'info': info})
+                task_response = TaskResponse(Status.OK, {'info': get_info()})
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
@@ -59,6 +61,11 @@ class PowerSupplyTasked(Tasked):
             elif task.name == TaskName.DEACTIVATE:
                 self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)
+
+            elif task.name == TaskName.GET_SYSTEM_INFO:
+                info = get_info()
+                info['active'] = self.entity.active
+                task_response = TaskResponse(status=Status.OK, value={'system_info': info})
 
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
