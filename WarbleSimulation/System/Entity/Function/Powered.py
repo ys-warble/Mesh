@@ -45,7 +45,7 @@ class Powered(BaseFunction):
         self.power_outputs = TypeList(PowerOutput)
 
     def eval(self):
-        raise NotImplementedError
+        pass
 
     def get_power_input(self, index=0):
         if index < len(self.power_inputs):

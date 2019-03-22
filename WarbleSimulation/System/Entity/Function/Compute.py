@@ -16,7 +16,7 @@ class Compute(BaseFunction):
         self.p_task_pipe, self.c_task_pipe = Pipe()
 
     def eval(self):
-        raise NotImplementedError
+        pass
 
     def is_computing(self):
         return self.process is not None
