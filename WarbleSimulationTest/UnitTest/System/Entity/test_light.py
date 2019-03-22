@@ -143,7 +143,8 @@ class TestLight(AppTestCase):
 
         # END COMPUTE
         self.light.send_task(ProgramTask(name=TaskName.END))
-        self.light.recv_task_resp()
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
 
         self.light.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
         self.assertFalse(self.light.recv_task_resp().value['system_info']['active'])

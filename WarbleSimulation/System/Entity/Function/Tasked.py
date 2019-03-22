@@ -111,6 +111,7 @@ class Tasked(BaseFunction):
                 compute.p_task_pipe.send(task)
                 compute.process.join()
                 compute.process = None
+                self.last_task_response = TaskResponse(status=Status.OK, value=None)
             elif not compute.is_computing():
                 self.last_task_response = send_basic(task)
             elif compute.is_computing():
