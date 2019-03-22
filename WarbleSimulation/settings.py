@@ -7,12 +7,12 @@ LOGGING_LEVEL = logging.INFO
 LOGGING_FORMAT = None
 
 LOGGING_CONSOLE = True
-LOGGING_CONSOLE_LEVEL = LOGGING_LEVEL
-LOGGING_CONSOLE_FORMAT = '%(asctime)s - P%(process)d - %(name)s - %(levelname)s - %(message)s'
+LOGGING_CONSOLE_LEVEL = None
+LOGGING_CONSOLE_FORMAT = None
 
-LOGGING_FILE = True
+LOGGING_FILE = False
 LOGGING_FILE_NAME = 'run.log'
-LOGGING_FILE_LEVEL = LOGGING_LEVEL
+LOGGING_FILE_LEVEL = None
 LOGGING_FILE_FORMAT = '%(asctime)s - P%(process)d - %(name)s - %(levelname)s - %(message)s'
 
 # Plotting
