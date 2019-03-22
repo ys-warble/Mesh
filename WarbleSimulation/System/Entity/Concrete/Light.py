@@ -7,7 +7,8 @@ from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Compute import Compute
 from WarbleSimulation.System.Entity.Function.Powered import PowerInput, Powered
-from WarbleSimulation.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, ProgramTask, TaskResponse
+from WarbleSimulation.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, ProgramTask, TaskResponse, \
+    Tasked
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 
@@ -26,6 +27,7 @@ class Light(Concrete):
         powered = Powered()
         powered.power_inputs.append(PowerInput(self))
         self.functions[Function.POWERED] = powered
+        self.functions[Function.TASKED] = Tasked(self)
         self.functions[Function.COMPUTE] = LightCompute(self)
 
     def get_default_shape(self):
