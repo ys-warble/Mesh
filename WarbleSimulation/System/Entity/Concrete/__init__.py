@@ -75,7 +75,7 @@ class Concrete(Entity):
         return self.get_multiplied_shape()
 
     def get_default_shape(self):
-        return None
+        raise NotImplementedError
 
     def get_multiplied_shape(self):
         if self.get_default_shape() is None:
@@ -96,12 +96,6 @@ class Concrete(Entity):
             return self.functions[function]
         else:
             return None
-
-    def send_task(self, task):
-        raise NotImplementedError
-
-    def recv_task_resp(self):
-        raise NotImplementedError
 
     def __str__(self):
         return '%s(uuid=.%s,dim=%s,matter=%s)' % (type(self).__name__,
