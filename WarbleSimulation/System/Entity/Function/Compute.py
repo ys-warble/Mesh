@@ -1,9 +1,15 @@
 from multiprocessing import Pipe
 
 from WarbleSimulation.System.Entity.Function import BaseFunction
+from WarbleSimulation.System.Entity.Function.Tasked import TaskName
 
 
 class Compute(BaseFunction):
+    tasks = [
+        TaskName.START,
+        TaskName.END,
+    ]
+
     def __init__(self, entity):
         super().__init__()
         self.entity = entity
