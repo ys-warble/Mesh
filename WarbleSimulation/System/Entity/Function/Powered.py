@@ -39,8 +39,8 @@ class PowerOutput:
 
 
 class Powered(BaseFunction):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, entity):
+        super().__init__(entity)
         self.power_inputs = TypeList(PowerInput)
         self.power_outputs = TypeList(PowerOutput)
 

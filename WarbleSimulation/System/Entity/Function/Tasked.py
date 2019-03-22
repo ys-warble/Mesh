@@ -75,9 +75,7 @@ class Tasked(BaseFunction):
     ]
 
     def __init__(self, entity):
-        super().__init__()
-        self.entity = entity
-
+        super().__init__(entity)
         self.last_task = None
         self.last_task_response = None
 

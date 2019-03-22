@@ -11,8 +11,7 @@ class Compute(BaseFunction):
     ]
 
     def __init__(self, entity):
-        super().__init__()
-        self.entity = entity
+        super().__init__(entity)
         self.process = None
         self.p_task_pipe, self.c_task_pipe = Pipe()
 

@@ -19,7 +19,7 @@ class PowerSupply(Concrete):
 
         self.task_active = False
 
-        powered = Powered()
+        powered = Powered(self)
         powered.power_outputs.append(PowerOutput(self))
         self.functions[Function.POWERED] = powered
         self.functions[Function.TASKED] = PowerSupplyTasked(self)

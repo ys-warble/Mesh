@@ -22,7 +22,7 @@ class Light(Concrete):
 
         self.active = False
 
-        powered = Powered()
+        powered = Powered(self)
         powered.power_inputs.append(PowerInput(self))
         self.functions[Function.POWERED] = powered
         self.functions[Function.TASKED] = LightTasked(self)

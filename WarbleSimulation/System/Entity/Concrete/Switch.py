@@ -16,7 +16,7 @@ class Switch(Concrete):
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
-        powered = Powered()
+        powered = Powered(self)
         powered.power_inputs.append(PowerInput(self))
         powered.power_outputs.append(PowerOutput(self))
         self.functions[Function.POWERED] = powered
