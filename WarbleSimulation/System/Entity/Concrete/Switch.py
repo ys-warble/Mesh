@@ -1,6 +1,8 @@
 import numpy as np
 
 from WarbleSimulation.System.Entity.Concrete import Concrete
+from WarbleSimulation.System.Entity.Function import Function
+from WarbleSimulation.System.Entity.Function.Powered import PowerInput, PowerOutput, Powered
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 
@@ -14,10 +16,15 @@ class Switch(Concrete):
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
+        powered = Powered()
+        powered.power_inputs.append(PowerInput(self))
+        powered.power_outputs.append(PowerOutput(self))
+        self.functions[Function.POWERED] = powered
+
     def get_default_shape(self):
-        m = self.matter_type.value
+        i = self.matter_type.value
         shape = np.array([
-            [[m, m]]
+            [[i, i]]
         ])
 
         return shape

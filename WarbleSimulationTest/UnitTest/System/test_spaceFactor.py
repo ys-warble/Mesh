@@ -43,7 +43,7 @@ class TestSpaceFactor(TestCase):
 
     def test_matter_type_enum_total(self):
         total_enum = len(SpaceFactor.MatterType)
-        self.assertEqual(total_enum, 12)
+        self.assertEqual(total_enum, 13)
 
     def test_temperature_enum_total(self):
         total_enum = len(SpaceFactor.Temperature)

@@ -33,6 +33,7 @@ class MatterType(Enum):
     WOOD = 303
     GLASS = 304
     CONCRETE = 305
+    METAL = 306
     PERFECT_SOLID = 399
 
 

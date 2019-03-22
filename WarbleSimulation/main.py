@@ -3,7 +3,8 @@ import uuid
 from multiprocessing import Process, Queue, Pipe
 
 from WarbleSimulation.System.Entity.Concrete.Light import Light
-from WarbleSimulation.System.Entity.Task import Task, Command
+from WarbleSimulation.System.Entity.Function.Tasked import Task
+from WarbleSimulation.System.Entity.Task import Command
 
 if __name__ == '__main__':
     light1 = Light(uuid=uuid.uuid4())

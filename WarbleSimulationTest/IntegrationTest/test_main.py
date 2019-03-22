@@ -16,7 +16,7 @@ from WarbleSimulation.System.Entity.Concrete.Table import Table
 from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.Entity.Concrete.Wardrobe import Wardrobe
-from WarbleSimulation.System.Entity.Task import Task, Command
+from WarbleSimulation.System.Entity.Function.Tasked import Task
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Logger, Plotter
 from WarbleSimulationTest import test_settings
@@ -38,54 +38,6 @@ class TestMain(TestCase):
     def tearDown(self):
         self.logger.info(test_settings.end_title_format(self._testMethodName))
         self.logger.info('')
-
-    def test_main(self):
-        # Create System
-        self.system = System('MyNewSystem')
-
-        # Put Space on the System
-        self.system.put_space(dimension=(40, 30, 12), resolution=1,
-                              space_factor_types=[i for i in SpaceFactor.SpaceFactor])
-
-        # Put Entity on the Space
-        light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
-        self.system.put_entity(light1, (19, 14, 9))
-        light2 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
-        self.system.put_entity(light2, (9, 14, 9))
-        light3 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
-        self.system.put_entity(light3, (29, 14, 9))
-
-        # Multiprocessing Init
-        mp = {}
-        result_queue = Queue()
-
-        for entity, dimension, orientation in self.system.entities:
-            if entity.runnable is True:
-                p_pipe, c_pipe = Pipe()
-                process = Process(target=entity.run, args=(result_queue, c_pipe))
-                mp[entity] = {
-                    'p_pipe': p_pipe,
-                    'c_pipe': c_pipe,
-                    'process': process,
-                }
-
-        # Multiprocessing Start
-        for entity in mp:
-            mp[entity]['process'].start()
-
-        # Multiprocessing Do
-        for entity_process in mp:
-            task = Task(command=Command.ACTIVE)
-            mp[entity_process]['p_pipe'].send(task)
-        for entity_process in mp:
-            task = Task(command=Command.GET_INFO)
-            mp[entity_process]['p_pipe'].send(task)
-
-        # Multiprocessing End
-        for entity_process in mp:
-            task = Task(command=Command.END)
-            mp[entity_process]['p_pipe'].send(task)
-            mp[entity_process]['process'].join()
 
     def test_main_1(self):
         # Create System
@@ -261,3 +213,51 @@ class TestMain(TestCase):
             auto_open=test_settings.auto_open,
             opacity=0.6
         )
+
+    def test_main_4(self):
+        # Create System
+        self.system = System('MyNewSystem')
+
+        # Put Space on the System
+        self.system.put_space(dimension=(40, 30, 12), resolution=1,
+                              space_factor_types=[i for i in SpaceFactor.SpaceFactor])
+
+        # Put Entity on the Space
+        light1 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
+        self.system.put_entity(light1, (19, 14, 9))
+        light2 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
+        self.system.put_entity(light2, (9, 14, 9))
+        light3 = Light(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
+        self.system.put_entity(light3, (29, 14, 9))
+
+        # Multiprocessing Init
+        mp = {}
+        result_queue = Queue()
+
+        for entity, dimension, orientation in self.system.entities:
+            if entity.runnable is True:
+                p_pipe, c_pipe = Pipe()
+                process = Process(target=entity.run, args=(result_queue, c_pipe))
+                mp[entity] = {
+                    'p_pipe': p_pipe,
+                    'c_pipe': c_pipe,
+                    'process': process,
+                }
+
+        # Multiprocessing Start
+        for entity in mp:
+            mp[entity]['process'].start()
+
+        # Multiprocessing Do
+        for entity_process in mp:
+            task = Task(task_name=Command.ACTIVE)
+            mp[entity_process]['p_pipe'].send(task)
+        for entity_process in mp:
+            task = Task(task_name=Command.GET_INFO)
+            mp[entity_process]['p_pipe'].send(task)
+
+        # Multiprocessing End
+        for entity_process in mp:
+            task = Task(task_name=Command.END)
+            mp[entity_process]['p_pipe'].send(task)
+            mp[entity_process]['process'].join()

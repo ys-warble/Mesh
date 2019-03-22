@@ -66,6 +66,11 @@ class Concrete(Entity):
             [Concrete.default_dimension[i] * self.dimension_x[i] for i in range(len(Concrete.default_dimension))])
         self.matter_type = matter_type
 
+        self.functions = dict()
+
+        self.last_task = None
+        self.last_task_response = None
+
     def get_shape(self):
         return self.get_multiplied_shape()
 
@@ -79,3 +84,26 @@ class Concrete(Entity):
             multiplier = tuple(
                 [int(self.dimension[i] / type(self).default_dimension[i]) for i in range(len(self.dimension))])
             return np.kron(self.get_default_shape(), np.ones(multiplier))
+
+    def has_function(self, function):
+        if function in self.functions and self.functions[function] is not None:
+            return True
+        else:
+            return False
+
+    def get_function(self, function):
+        if self.has_function(function):
+            return self.functions[function]
+        else:
+            return None
+
+    def send_task(self, task):
+        raise NotImplementedError
+
+    def recv_task_resp(self):
+        raise NotImplementedError
+
+    def __str__(self):
+        return 'Concrete(uuid=.%s,dim=%s,matter=%s)' % (str(self.uuid)[-8:],
+                                                        self.dimension,
+                                                        self.matter_type)

@@ -35,6 +35,9 @@ class System:
         # unit direction is tuple 3 and only 1 is set, rest are unset, reference is only origin
 
         # Check location is in space
+        if self.space is None:
+            raise AttributeError
+
         if not all(0 <= location[i] < self.space.dimension[i] * self.space.resolution for i in range(len(location))):
             return False
 
@@ -88,5 +91,6 @@ class System:
 
         return True
 
-    def remove_entity(self):
-        pass
+    def remove_entity(self, entity):
+        # TODO: Implement
+        raise NotImplementedError
