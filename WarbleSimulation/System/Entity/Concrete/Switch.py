@@ -22,9 +22,9 @@ class Switch(Concrete):
         self.functions[Function.POWERED] = powered
 
     def get_default_shape(self):
-        m = self.matter_type.value
+        i = self.matter_type.value
         shape = np.array([
-            [[m, m]]
+            [[i, i]]
         ])
 
         return shape

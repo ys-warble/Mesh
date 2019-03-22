@@ -29,16 +29,16 @@ class Light(Concrete):
         self.functions[Function.COMPUTE] = LightCompute(self)
 
     def get_default_shape(self):
-        matter = self.matter_type.value
+        i = self.matter_type.value
         shape = np.array([
             [[0, 0, 0],
-             [0, matter, 0],
+             [0, i, 0],
              [0, 0, 0]],
-            [[0, matter, 0],
-             [matter, matter, matter],
-             [0, matter, 0]],
+            [[0, i, 0],
+             [i, i, i],
+             [0, i, 0]],
             [[0, 0, 0],
-             [0, matter, 0],
+             [0, i, 0],
              [0, 0, 0]],
         ])
 

@@ -24,8 +24,8 @@ class PowerSupply(Concrete):
         self.functions[Function.POWERED] = powered
 
     def get_default_shape(self):
-        matter = self.matter_type.value
-        shape = np.array([[[matter]]])
+        i = self.matter_type.value
+        shape = np.array([[[i]]])
 
         return shape
 

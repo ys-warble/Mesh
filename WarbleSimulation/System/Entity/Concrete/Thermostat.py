@@ -15,10 +15,10 @@ class Thermostat(Concrete):
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
     def get_default_shape(self):
-        matter = self.matter_type.value
+        i = self.matter_type.value
         shape = np.array([
-            [[matter, matter]],
-            [[matter, matter]]
+            [[i, i]],
+            [[i, i]]
         ])
 
         return shape
