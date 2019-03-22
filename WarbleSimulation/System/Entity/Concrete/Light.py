@@ -1,3 +1,5 @@
+from multiprocessing import Process
+
 import numpy as np
 
 from WarbleSimulation import settings
@@ -5,7 +7,7 @@ from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Compute import Compute
 from WarbleSimulation.System.Entity.Function.Powered import PowerInput, Powered
-from WarbleSimulation.System.Entity.Task import TaskName, TaskResponse, Status
+from WarbleSimulation.System.Entity.Task import TaskName, TaskResponse, Status, TaskLevel, ProgramTask
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 
@@ -43,25 +45,91 @@ class Light(Concrete):
         return shape
 
     def send_task(self, task):
-        pass
+        self.last_task = task
+
+        if task.level == TaskLevel.PROGRAM and task.name == TaskName.START:
+            if self.has_function(Function.COMPUTE):
+                compute = self.get_function(Function.COMPUTE)
+                if not compute.is_computing():
+                    compute.process = Process(target=compute.run)
+                    compute.process.start()
+                    self.last_task_response = TaskResponse(status=Status.OK, value=None)
+                else:
+                    self.last_task_response = TaskResponse(status=Status.ERROR, value={'error': 'Already Computing'})
+            else:
+                self.last_task_response = TaskResponse(status=Status.ERROR, value={'error': 'Not Implemented'})
+
+        elif task.level == TaskLevel.PROGRAM and task.name == TaskName.END:
+            if self.has_function(Function.COMPUTE):
+                compute = self.get_function(Function.COMPUTE)
+                if compute.is_computing():
+                    compute.p_task_pipe.send(task)
+                    compute.process.join()
+                    compute.process = None
+                    self.last_task_response = TaskResponse(status=Status.OK, value=None)
+                else:
+                    self.last_task_response = TaskResponse(status=Status.ERROR, value={'error': 'Already Computing'})
+            else:
+                self.last_task_response = TaskResponse(status=Status.ERROR, value={'error': 'Not Implemented'})
+
+        else:
+            if self.has_function(Function.COMPUTE) and self.get_function(Function.COMPUTE).is_computing():
+                self.get_function(Function.COMPUTE).p_task_pipe.send(task)
+            else:
+                self.last_task_response = self.handle_task(task)
 
     def recv_task_resp(self):
-        pass
+        if self.has_function(Function.COMPUTE) and self.get_function(Function.COMPUTE).is_computing():
+            if self.last_task != ProgramTask(TaskName.START):
+                self.last_task_response = self.get_function(Function.COMPUTE).p_task_pipe.recv()
+
+        temp = self.last_task_response
+        self.last_task_response = None
+        return temp
 
     def handle_task(self, task):
-        if task.name == TaskName.GET_INFO:
-            info = {
-                'uuid': str(self.uuid),
-                'identifier': type(self).identifier,
-                'type': {
-                    'actuator': [
-                        'LUMINOSITY'
-                    ],
-                    'sensor': [],
-                    'accessor': []
-                },
-            }
-            task_response = TaskResponse(Status.OK, {'info': info})
+        if task.level == TaskLevel.ENTITY:
+            if task.name == TaskName.GET_INFO:
+                task_response = TaskResponse(Status.OK, {'info': {
+                    'uuid': str(self.uuid),
+                    'identifier': type(self).identifier,
+                    'type': {
+                        'actuator': [
+                            'LUMINOSITY'
+                        ],
+                        'sensor': [],
+                        'accessor': []
+                    },
+                }})
+            else:
+                task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+
+        elif task.level == TaskLevel.SYSTEM:
+            if task.name == TaskName.GET_SYSTEM_INFO:
+                task_response = TaskResponse(status=Status.OK, value={'system_info': {
+                    'uuid': str(self.uuid),
+                    'identifier': type(self).identifier,
+                    'type': {
+                        'actuator': [
+                            'LUMINOSITY'
+                        ],
+                        'sensor': [],
+                        'accessor': []
+                    },
+                    'active': self.task_active
+                }})
+            elif task.name == TaskName.ACTIVE:
+                self.task_active = True
+                task_response = TaskResponse(status=Status.OK, value=None)
+            elif task.name == TaskName.DEACTIVATE:
+                self.task_active = False
+                task_response = TaskResponse(status=Status.OK, value=None)
+            else:
+                task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+
+        elif task.level == TaskLevel.PROGRAM:
+            task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+
         else:
             task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
@@ -71,6 +139,9 @@ class Light(Concrete):
 class LightCompute(Compute):
     def __init__(self, entity):
         super().__init__(entity)
+
+    def is_computing(self):
+        return self.process is not None
 
     def run(self):
         if self.c_task_pipe is None:
@@ -82,20 +153,10 @@ class LightCompute(Compute):
             # Do the submitted Task
             if self.c_task_pipe is not None and self.c_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
                 task = self.c_task_pipe.recv()
-                if task.name == TaskName.END:
-                    self.entity.task_active = False
-                    self.c_task_pipe.send(TaskResponse(Status.OK, None))
-                    self.c_task_pipe.close()
+                if task.level == TaskLevel.PROGRAM and task.name == TaskName.END:
                     break
-                elif task.name == TaskName.ACTIVE:
-                    self.entity.task_active = True
-                    self.c_task_pipe.send(TaskResponse(Status.OK, None))
-                elif task.name == TaskName.DEACTIVATE:
-                    self.entity.task_active = False
-                    self.c_task_pipe.send(TaskResponse(Status.OK, None))
                 else:
-                    if self.entity.task_active:
-                        self.c_task_pipe.send(self.handle_task(task))
+                    self.c_task_pipe.send(self.handle_task(task))
 
     def handle_task(self, task):
         return self.entity.handle_task(task)

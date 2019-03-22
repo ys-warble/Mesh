@@ -31,7 +31,21 @@ class PowerSupply(Concrete):
 
     def send_task(self, task):
         if task.level == TaskLevel.ENTITY:
-            self.handle_task(task)
+            if task.name == TaskName.GET_INFO:
+                info = {
+                    'uuid': str(self.uuid),
+                    'identifier': type(self).identifier,
+                    'type': {
+                        'actuator': [
+                            'POWER'
+                        ],
+                        'sensor': [],
+                        'accessor': []
+                    },
+                }
+                self.task_response = TaskResponse(Status.OK, {'info': info})
+            else:
+                self.task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         elif task.level == TaskLevel.SYSTEM:
             if task.name == TaskName.ACTIVE:
@@ -41,6 +55,7 @@ class PowerSupply(Concrete):
             elif task.name == TaskName.DEACTIVATE:
                 self.task_active = False
                 self.task_response = TaskResponse(status=Status.OK, value=None)
+
         else:
             self.task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
@@ -48,20 +63,3 @@ class PowerSupply(Concrete):
         temp = self.task_response
         self.task_response = None
         return temp
-
-    def handle_task(self, task):
-        if task.level == TaskLevel.ENTITY and task.name == TaskName.GET_INFO:
-            info = {
-                'uuid': str(self.uuid),
-                'identifier': type(self).identifier,
-                'type': {
-                    'actuator': [
-                        'POWER'
-                    ],
-                    'sensor': [],
-                    'accessor': []
-                },
-            }
-            self.task_response = TaskResponse(Status.OK, {'info': info})
-        else:
-            self.task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
