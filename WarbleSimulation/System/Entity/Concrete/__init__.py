@@ -68,7 +68,8 @@ class Concrete(Entity):
 
         self.functions = dict()
 
-        self.task_response = None
+        self.last_task = None
+        self.last_task_response = None
 
     def get_shape(self):
         return self.get_multiplied_shape()
@@ -100,9 +101,6 @@ class Concrete(Entity):
         raise NotImplementedError
 
     def recv_task_resp(self):
-        raise NotImplementedError
-
-    def handle_task(self, task):
         raise NotImplementedError
 
     def __str__(self):
