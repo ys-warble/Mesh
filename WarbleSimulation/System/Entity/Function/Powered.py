@@ -1,6 +1,7 @@
 from enum import Enum
 
 from WarbleSimulation.System.Entity.Channel.PowerWire import PowerWire
+from WarbleSimulation.System.Entity.Function import BaseFunction
 from WarbleSimulation.util.TypeList import TypeList
 
 
@@ -37,8 +38,9 @@ class PowerOutput:
         self.power_wires = TypeList(PowerWire)
 
 
-class Powered:
+class Powered(BaseFunction):
     def __init__(self):
+        super().__init__()
         self.power_inputs = TypeList(PowerInput)
         self.power_outputs = TypeList(PowerOutput)
 

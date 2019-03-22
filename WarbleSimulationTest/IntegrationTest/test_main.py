@@ -16,7 +16,7 @@ from WarbleSimulation.System.Entity.Concrete.Table import Table
 from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.Entity.Concrete.Wardrobe import Wardrobe
-from WarbleSimulation.System.Entity.Task import Task
+from WarbleSimulation.System.Entity.Function.Tasked import Task
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Logger, Plotter
 from WarbleSimulationTest import test_settings

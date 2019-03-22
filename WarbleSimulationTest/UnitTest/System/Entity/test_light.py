@@ -4,7 +4,7 @@ from unittest import TestCase
 import numpy as np
 
 from WarbleSimulation.System.Entity.Concrete.Light import Light
-from WarbleSimulation.System.Entity.Task import ProgramTask, TaskName, SystemTask, Task, Status, TaskResponse
+from WarbleSimulation.System.Entity.Function.Tasked import TaskName, Status, ProgramTask, SystemTask, Task, TaskResponse
 from WarbleSimulation.System.SpaceFactor import MatterType
 from WarbleSimulation.util import Logger
 from WarbleSimulationTest import test_settings

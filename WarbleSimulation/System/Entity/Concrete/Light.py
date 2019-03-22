@@ -7,7 +7,7 @@ from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Compute import Compute
 from WarbleSimulation.System.Entity.Function.Powered import PowerInput, Powered
-from WarbleSimulation.System.Entity.Task import TaskName, TaskResponse, Status, TaskLevel, ProgramTask
+from WarbleSimulation.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, ProgramTask, TaskResponse
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 

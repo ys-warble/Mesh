@@ -2,7 +2,7 @@ import uuid
 from unittest import TestCase
 
 from WarbleSimulation.System.Entity.Concrete.PowerSupply import PowerSupply
-from WarbleSimulation.System.Entity.Task import ProgramTask, TaskName, SystemTask, Task, Status, TaskResponse
+from WarbleSimulation.System.Entity.Function.Tasked import TaskName, Status, ProgramTask, SystemTask, Task, TaskResponse
 from WarbleSimulation.System.SpaceFactor import MatterType
 from WarbleSimulation.util import Logger
 from WarbleSimulationTest import test_settings

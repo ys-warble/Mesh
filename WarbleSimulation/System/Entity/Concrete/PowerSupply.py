@@ -3,7 +3,7 @@ import numpy as np
 from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Powered import PowerOutput, Powered
-from WarbleSimulation.System.Entity.Task import TaskLevel, TaskName, TaskResponse, Status
+from WarbleSimulation.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, TaskResponse
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 

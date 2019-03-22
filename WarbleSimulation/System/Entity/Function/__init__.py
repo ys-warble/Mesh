@@ -8,3 +8,8 @@ class Function(Enum):
 
     SENSE = 'SENSE'
     ACTUATE = 'ACTUATE'
+
+
+class BaseFunction:
+    def __init__(self):
+        pass
