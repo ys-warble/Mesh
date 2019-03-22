@@ -66,13 +66,7 @@ class TaskResponse:
 
 
 class Tasked(BaseFunction):
-    tasks = [
-        TaskName.GET_SYSTEM_INFO,
-        TaskName.ACTIVE,
-        TaskName.DEACTIVATE,
-
-        TaskName.GET_INFO,
-    ]
+    tasks = []
 
     def __init__(self, entity):
         super().__init__(entity)

@@ -33,6 +33,14 @@ class PowerSupply(Concrete):
 
 
 class PowerSupplyTasked(Tasked):
+    tasks = [
+        TaskName.GET_SYSTEM_INFO,
+        TaskName.ACTIVE,
+        TaskName.DEACTIVATE,
+
+        TaskName.GET_INFO,
+    ]
+
     def handle(self, task):
         def get_info():
             return {
