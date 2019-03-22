@@ -1,6 +1,7 @@
 from enum import Enum
+from multiprocessing import Process
 
-from WarbleSimulation.System.Entity.Function import BaseFunction
+from WarbleSimulation.System.Entity.Function import BaseFunction, Function
 
 
 class TaskLevel(Enum):
@@ -69,17 +70,48 @@ class Tasked(BaseFunction):
         TaskName.GET_SYSTEM_INFO,
         TaskName.ACTIVE,
         TaskName.DEACTIVATE,
+
         TaskName.GET_INFO,
     ]
 
     def __init__(self, entity):
         super().__init__()
+        self.entity = entity
+
+        self.last_task = None
+        self.last_task_response = None
 
     def send(self, task):
-        raise NotImplementedError
+        def send_basic(t_task):
+            return self.handle(t_task)
+
+        self.last_task = task
+
+        if self.entity.has_function(Function.COMPUTE):
+            compute = self.entity.get_function(Function.COMPUTE)
+            if task == ProgramTask(TaskName.START) and not compute.is_computing():
+                compute.process = Process(target=compute.run)
+                compute.process.start()
+                self.last_task_response = TaskResponse(status=Status.OK, value=None)
+            elif task == ProgramTask(TaskName.END) and compute.is_computing():
+                compute.p_task_pipe.send(task)
+                compute.process.join()
+                compute.process = None
+            elif not compute.is_computing():
+                self.last_task_response = send_basic(task)
+            elif compute.is_computing():
+                compute.p_task_pipe.send(task)
+        else:
+            self.last_task_response = send_basic(task)
 
     def recv(self):
-        raise NotImplementedError
+        if self.entity.has_function(Function.COMPUTE) and self.entity.get_function(Function.COMPUTE).is_computing():
+            if self.last_task != ProgramTask(TaskName.START):
+                self.last_task_response = self.entity.get_function(Function.COMPUTE).p_task_pipe.recv()
+
+        temp = self.last_task_response
+        self.last_task_response = None
+        return temp
 
     def handle(self, task):
         raise NotImplementedError
