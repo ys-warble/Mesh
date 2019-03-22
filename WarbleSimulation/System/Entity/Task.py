@@ -11,8 +11,9 @@ class TaskName(Enum):
     START = 0
     END = 1
 
-    ACTIVE = 101
-    DEACTIVATE = 102
+    GET_SYSTEM_INFO = 101
+    ACTIVE = 102
+    DEACTIVATE = 103
 
     GET_INFO = 201
 
@@ -29,6 +30,9 @@ class BaseTask:
 
     def __str__(self):
         return "Task(%s,%s)" % (self.level, self.name)
+
+    def __eq__(self, other):
+        return type(self) == type(other) and self.level == other.level and self.name == other.name
 
 
 class ProgramTask(BaseTask):
