@@ -15,6 +15,8 @@ def get_logger(name):
 
         logger.setLevel(logging_level)
 
+        logger.handlers = []
+
         # create console handler and set level to debug
         ch = logging.StreamHandler()
         ch.setLevel(logging_level)
