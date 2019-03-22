@@ -80,23 +80,19 @@ class TestLight(TestCase):
                          }}))
 
     def test_task_no_compute(self):
-        # self.light.send_task(ProgramTask(name=TaskName.END))
-        # self.assertEqual(self.light.recv_task_resp(),
-        #                  TaskResponse(status=Status.ERROR, value={'error': 'Not Implemented'}))
-
         # SystemTask
         self.light.send_task(SystemTask(name=TaskName.DEACTIVATE))
-        self.assertFalse(self.light.task_active)
+        self.assertFalse(self.light.active)
         self.assertEqual(self.light.recv_task_resp(),
                          TaskResponse(status=Status.OK, value=None))
 
         self.light.send_task(SystemTask(name=TaskName.ACTIVE))
-        self.assertTrue(self.light.task_active)
+        self.assertTrue(self.light.active)
         self.assertEqual(self.light.recv_task_resp(),
                          TaskResponse(status=Status.OK, value=None))
 
         self.light.send_task(SystemTask(name=TaskName.DEACTIVATE))
-        self.assertFalse(self.light.task_active)
+        self.assertFalse(self.light.active)
         self.assertEqual(self.light.recv_task_resp(),
                          TaskResponse(status=Status.OK, value=None))
 

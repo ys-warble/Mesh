@@ -79,17 +79,17 @@ class TestPowerSupply(TestCase):
 
         # SystemTask
         self.power_supply.send_task(SystemTask(name=TaskName.DEACTIVATE))
-        self.assertFalse(self.power_supply.task_active)
+        self.assertFalse(self.power_supply.active)
         self.assertEqual(self.power_supply.recv_task_resp(),
                          TaskResponse(status=Status.OK, value=None))
 
         self.power_supply.send_task(SystemTask(name=TaskName.ACTIVE))
-        self.assertTrue(self.power_supply.task_active)
+        self.assertTrue(self.power_supply.active)
         self.assertEqual(self.power_supply.recv_task_resp(),
                          TaskResponse(status=Status.OK, value=None))
 
         self.power_supply.send_task(SystemTask(name=TaskName.DEACTIVATE))
-        self.assertFalse(self.power_supply.task_active)
+        self.assertFalse(self.power_supply.active)
         self.assertEqual(self.power_supply.recv_task_resp(),
                          TaskResponse(status=Status.OK, value=None))
 
