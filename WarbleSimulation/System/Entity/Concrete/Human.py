@@ -15,15 +15,15 @@ class Human(Concrete):
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
     def get_default_shape(self):
-        m = self.matter_type.value
+        i = self.matter_type.value
         shape = np.array([
-            [[0, 0, 0, m, m, m, 0, 0],
+            [[0, 0, 0, i, i, i, 0, 0],
              [0, 0, 0, 0, 0, 0, 0, 0]],
-            [[m, m, m, m, m, m, m, m],
-             [m, 0, 0, 0, 0, 0, 0, 0]],
-            [[m, m, m, m, m, m, m, m],
-             [m, 0, 0, 0, 0, 0, 0, 0]],
-            [[0, 0, 0, m, m, m, 0, 0],
+            [[i, i, i, i, i, i, i, i],
+             [i, 0, 0, 0, 0, 0, 0, 0]],
+            [[i, i, i, i, i, i, i, i],
+             [i, 0, 0, 0, 0, 0, 0, 0]],
+            [[0, 0, 0, i, i, i, 0, 0],
              [0, 0, 0, 0, 0, 0, 0, 0]],
         ])
 

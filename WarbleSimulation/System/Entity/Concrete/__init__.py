@@ -1,6 +1,7 @@
 import numpy as np
 
 from WarbleSimulation.System.Entity import Entity
+from WarbleSimulation.System.Entity.Function import Function
 
 
 def transform_shape(entity_shape, from_direction, to_direction):
@@ -66,11 +67,13 @@ class Concrete(Entity):
             [Concrete.default_dimension[i] * self.dimension_x[i] for i in range(len(Concrete.default_dimension))])
         self.matter_type = matter_type
 
+        self.functions = dict()
+
     def get_shape(self):
         return self.get_multiplied_shape()
 
     def get_default_shape(self):
-        return None
+        raise NotImplementedError
 
     def get_multiplied_shape(self):
         if self.get_default_shape() is None:
@@ -79,3 +82,27 @@ class Concrete(Entity):
             multiplier = tuple(
                 [int(self.dimension[i] / type(self).default_dimension[i]) for i in range(len(self.dimension))])
             return np.kron(self.get_default_shape(), np.ones(multiplier))
+
+    def has_function(self, function):
+        if function in self.functions and self.functions[function] is not None:
+            return True
+        else:
+            return False
+
+    def get_function(self, function):
+        if self.has_function(function):
+            return self.functions[function]
+        else:
+            return None
+
+    def send_task(self, task):
+        return self.get_function(Function.TASKED).send(task)
+
+    def recv_task_resp(self):
+        return self.get_function(Function.TASKED).recv()
+
+    def __str__(self):
+        return '%s(uuid=.%s,dim=%s,matter=%s)' % (type(self).__name__,
+                                                  str(self.uuid)[-8:],
+                                                  self.dimension,
+                                                  self.matter_type)

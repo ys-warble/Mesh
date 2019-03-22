@@ -24,5 +24,5 @@ class Entity(ABC):
     def run(self, mp_space_factors, mp_task_pipe):
         pass
 
-    def handle_task(self, task):
-        raise NotImplementedError
+    def __str__(self):
+        return 'Entity(uuid=.%s)' % str(self.uuid)[-8:]
