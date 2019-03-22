@@ -8,7 +8,7 @@ from WarbleSimulation.System.SpaceFactor import MatterType
 
 
 class PowerSupply(Concrete):
-    identifier = 'PowerSource'
+    identifier = 'PowerSupply'
     default_dimension = (1, 1, 1)
     default_orientation = (0, 1, 0)
 
