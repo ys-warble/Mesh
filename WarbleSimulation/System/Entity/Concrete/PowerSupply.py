@@ -3,7 +3,7 @@ import numpy as np
 from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Powered import PowerOutput, Powered
-from WarbleSimulation.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, TaskResponse
+from WarbleSimulation.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, TaskResponse, Tasked
 from WarbleSimulation.System.SpaceFactor import MatterType
 
 
@@ -22,6 +22,7 @@ class PowerSupply(Concrete):
         powered = Powered()
         powered.power_outputs.append(PowerOutput(self))
         self.functions[Function.POWERED] = powered
+        self.functions[Function.TASKED] = PowerSupplyTasked(self)
 
     def get_default_shape(self):
         i = self.matter_type.value
@@ -29,12 +30,14 @@ class PowerSupply(Concrete):
 
         return shape
 
-    def send_task(self, task):
+
+class PowerSupplyTasked(Tasked):
+    def handle(self, task):
         if task.level == TaskLevel.ENTITY:
             if task.name == TaskName.GET_INFO:
                 info = {
-                    'uuid': str(self.uuid),
-                    'identifier': type(self).identifier,
+                    'uuid': str(self.entity.uuid),
+                    'identifier': type(self.entity).identifier,
                     'type': {
                         'actuator': [
                             'POWER'
@@ -43,23 +46,23 @@ class PowerSupply(Concrete):
                         'accessor': []
                     },
                 }
-                self.task_response = TaskResponse(Status.OK, {'info': info})
+                task_response = TaskResponse(Status.OK, {'info': info})
             else:
-                self.task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+                task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         elif task.level == TaskLevel.SYSTEM:
             if task.name == TaskName.ACTIVE:
-                self.task_active = True
-                self.task_response = TaskResponse(status=Status.OK, value=None)
+                self.entity.active = True
+                task_response = TaskResponse(status=Status.OK, value=None)
 
             elif task.name == TaskName.DEACTIVATE:
-                self.task_active = False
-                self.task_response = TaskResponse(status=Status.OK, value=None)
+                self.entity.active = False
+                task_response = TaskResponse(status=Status.OK, value=None)
+
+            else:
+                task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         else:
-            self.task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+            task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
-    def recv_task_resp(self):
-        temp = self.task_response
-        self.task_response = None
-        return temp
+        return task_response
