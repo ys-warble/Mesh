@@ -1,30 +1,14 @@
-from unittest import TestCase
-
 import WarbleSimulation.System.SpaceFactor as SpaceFactor
-from WarbleSimulation.util import Logger
-from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestSpaceFactor(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
+class TestSpaceFactor(AppTestCase):
     def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
+        super().setUp()
 
         # Define the default dimension and resolution
         self.dimension = (5, 5, 5)
         self.resolution = 3
-
-    def tearDown(self):
-        self.logger.info(test_settings.end_title_format(self._testMethodName))
-        self.logger.info('')
 
     # Enum Total
     def test_space_factor_enum_total(self):

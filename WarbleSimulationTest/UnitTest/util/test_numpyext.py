@@ -1,29 +1,10 @@
-from unittest import TestCase
-
 import numpy as np
 
 import WarbleSimulation.util.numpy_ext as npx
-from WarbleSimulation.util import Logger
-from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestNumpyExt(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
-
-    def tearDown(self):
-        self.logger.info(test_settings.end_title_format(self._testMethodName))
-        self.logger.info('')
-
+class TestNumpyExt(AppTestCase):
     def test_char_mod_valid(self):
         dimension = (5, 5, 5)
         a = np.zeros(dimension)

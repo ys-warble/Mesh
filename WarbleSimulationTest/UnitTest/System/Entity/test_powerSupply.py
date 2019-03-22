@@ -1,31 +1,15 @@
 import uuid
-from unittest import TestCase
 
 from WarbleSimulation.System.Entity.Concrete.PowerSupply import PowerSupply
 from WarbleSimulation.System.Entity.Function.Tasked import TaskName, Status, ProgramTask, SystemTask, Task, TaskResponse
 from WarbleSimulation.System.SpaceFactor import MatterType
-from WarbleSimulation.util import Logger
-from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestPowerSupply(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
+class TestPowerSupply(AppTestCase):
     def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
-
+        super().setUp()
         self.power_supply = PowerSupply(uuid=uuid.uuid4())
-
-    def tearDown(self):
-        self.logger.info(test_settings.end_title_format(self._testMethodName))
-        self.logger.info('')
 
     def test_get_default_shape(self):
         self.assertEqual(self.power_supply.get_default_shape(), [[[MatterType.METAL.value]]])

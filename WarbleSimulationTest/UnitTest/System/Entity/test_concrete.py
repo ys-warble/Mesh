@@ -1,14 +1,12 @@
-from unittest import TestCase
-
 import numpy as np
 
 from WarbleSimulation.System.Entity.Concrete import transform_shape
-from WarbleSimulation.util import Logger
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestConcrete(TestCase):
+class TestConcrete(AppTestCase):
     def setUp(self):
-        self.logger = Logger.get_logger(__name__)
+        super().setUp()
         self.arr = np.arange(8).reshape((2, 2, 2))
 
     def test_transform_shape_valid(self):

@@ -1,7 +1,6 @@
 import os
 import uuid
 from multiprocessing import Process, Pipe, Queue
-from unittest import TestCase
 
 import numpy as np
 
@@ -18,27 +17,12 @@ from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.Entity.Concrete.Wardrobe import Wardrobe
 from WarbleSimulation.System.Entity.Function.Tasked import Task
 from WarbleSimulation.System.System import System
-from WarbleSimulation.util import Logger, Plotter
+from WarbleSimulation.util import Plotter
 from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestMain(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
-
-    def tearDown(self):
-        self.logger.info(test_settings.end_title_format(self._testMethodName))
-        self.logger.info('')
-
+class TestMain(AppTestCase):
     def test_main_1(self):
         # Create System
         self.system = System('MyNewSystem')

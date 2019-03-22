@@ -1,23 +1,11 @@
-from unittest import TestCase
-
 from WarbleSimulation.System.Space import Space
 from WarbleSimulation.System.SpaceFactor import SpaceFactor
-from WarbleSimulation.util import Logger
-from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestSpace(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
+class TestSpace(AppTestCase):
     def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
+        super().setUp()
 
         # Create default space
         self.dimension = (5, 5, 5)
@@ -26,10 +14,6 @@ class TestSpace(TestCase):
         self.space = Space(dimension=self.dimension,
                            space_factor_types=[SpaceFactor.TEMPERATURE, SpaceFactor.MATTER],
                            resolution=self.resolution)
-
-    def tearDown(self):
-        self.logger.info(test_settings.end_title_format(self._testMethodName))
-        self.logger.info('')
 
     def test_constructor_valid_1(self):
         def func1():

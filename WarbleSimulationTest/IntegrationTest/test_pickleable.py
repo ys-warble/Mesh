@@ -1,33 +1,15 @@
 import pickle
 import uuid
 from pickle import PicklingError
-from unittest import TestCase
 
 from WarbleSimulation.System.Entity.Concrete.Light import Light
 from WarbleSimulation.System.Space import Space
 from WarbleSimulation.System.SpaceFactor import SpaceFactor
 from WarbleSimulation.System.System import System
-from WarbleSimulation.util import Logger
-from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestPickleable(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
-
-    def tearDown(self):
-        self.logger.info(test_settings.end_title_format(self._testMethodName))
-        self.logger.info('')
-
+class TestPickleable(AppTestCase):
     def test_space(self):
         space = Space((5, 5, 5), space_factor_types=[i for i in SpaceFactor])
 

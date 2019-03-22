@@ -1,28 +1,17 @@
 import uuid
-from unittest import TestCase
 
 import numpy as np
 
 from WarbleSimulation.System.Entity.Concrete.Light import Light
 from WarbleSimulation.System.Entity.Function.Tasked import TaskName, Status, ProgramTask, SystemTask, Task, TaskResponse
 from WarbleSimulation.System.SpaceFactor import MatterType
-from WarbleSimulation.util import Logger
 from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestLight(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
+class TestLight(AppTestCase):
     def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
-
+        super().setUp()
         self.light = Light(uuid=uuid.uuid4())
 
     def tearDown(self):
