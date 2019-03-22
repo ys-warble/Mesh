@@ -67,21 +67,6 @@ class TestPowerSupply(TestCase):
                              },
                          }}))
 
-    def test_handle_task(self):
-        self.power_supply.handle_task(Task(name=TaskName.GET_INFO))
-        self.assertEqual(self.power_supply.recv_task_resp(),
-                         TaskResponse(status=Status.OK, value={'info': {
-                             'uuid': str(self.power_supply.uuid),
-                             'identifier': type(self.power_supply).identifier,
-                             'type': {
-                                 'actuator': [
-                                     'POWER'
-                                 ],
-                                 'sensor': [],
-                                 'accessor': []
-                             },
-                         }}))
-
     def test_task(self):
         # ProgramTask
         self.power_supply.send_task(ProgramTask(name=TaskName.START))
