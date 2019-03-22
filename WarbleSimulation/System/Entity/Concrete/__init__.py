@@ -104,6 +104,7 @@ class Concrete(Entity):
         raise NotImplementedError
 
     def __str__(self):
-        return 'Concrete(uuid=.%s,dim=%s,matter=%s)' % (str(self.uuid)[-8:],
-                                                        self.dimension,
-                                                        self.matter_type)
+        return '%s(uuid=.%s,dim=%s,matter=%s)' % (type(self).__name__,
+                                                  str(self.uuid)[-8:],
+                                                  self.dimension,
+                                                  self.matter_type)
