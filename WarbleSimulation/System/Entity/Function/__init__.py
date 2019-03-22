@@ -12,5 +12,8 @@ class Function(Enum):
 
 
 class BaseFunction:
-    def __init__(self):
-        pass
+    def __init__(self, entity):
+        self.entity = entity
+
+    def eval(self):
+        raise NotImplementedError

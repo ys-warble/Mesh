@@ -11,3 +11,9 @@ class Wall(Concrete):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.CONCRETE)
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
+
+    def get_default_shape(self):
+        return None
+
+    def define_functions(self):
+        pass

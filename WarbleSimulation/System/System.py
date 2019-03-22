@@ -66,7 +66,7 @@ class System:
 
         # Check if fit, not exceeding boundary
         self.logger.debug('x_begin: %s; x_end: %s; y_begin: %s; y_end: %s; z_begin: %s; z_end: %s;' % (
-        x_begin, x_end, y_begin, y_end, z_begin, z_end))
+            x_begin, x_end, y_begin, y_end, z_begin, z_end))
         if x_begin < 0 or \
                 y_begin < 0 or \
                 z_begin < 0 or \

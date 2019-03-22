@@ -27,3 +27,6 @@ class Table(Concrete):
         0:dimension[2] - 1] = self.matter_type.value
 
         return shape
+
+    def define_functions(self):
+        pass

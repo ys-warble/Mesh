@@ -75,18 +75,32 @@ class Tasked(BaseFunction):
     ]
 
     def __init__(self, entity):
-        super().__init__()
-        self.entity = entity
-
+        super().__init__(entity)
         self.last_task = None
         self.last_task_response = None
 
+        self.supported_tasks = None
+
+    def eval(self):
+        self.supported_tasks = list()
+        for key, val in self.entity.functions.items():
+            try:
+                self.supported_tasks.extend(type(val).tasks)
+            except AttributeError:
+                pass
+
+    def validate(self, task):
+        if self.supported_tasks is None:
+            self.eval()
+
+        return True if (task.name in self.supported_tasks and task.level.value == int(
+            task.name.value / 100) * 100) else False
+
     def send(self, task):
         def send_basic(t_task):
-            return self.handle(t_task)
+            return self.main_handle(t_task)
 
         self.last_task = task
-
         if self.entity.has_function(Function.COMPUTE):
             compute = self.entity.get_function(Function.COMPUTE)
             if task == ProgramTask(TaskName.START) and not compute.is_computing():
@@ -112,6 +126,12 @@ class Tasked(BaseFunction):
         temp = self.last_task_response
         self.last_task_response = None
         return temp
+
+    def main_handle(self, task):
+        if not self.validate(task):
+            return TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+        else:
+            return self.handle(task)
 
     def handle(self, task):
         raise NotImplementedError

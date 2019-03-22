@@ -67,8 +67,12 @@ class Concrete(Entity):
             [Concrete.default_dimension[i] * self.dimension_x[i] for i in range(len(Concrete.default_dimension))])
         self.matter_type = matter_type
 
+        # Functions
         self.functions = dict()
+        self.define_functions()
+        self.eval_functions()
 
+    # SHAPE
     def get_shape(self):
         return self.get_multiplied_shape()
 
@@ -83,6 +87,14 @@ class Concrete(Entity):
                 [int(self.dimension[i] / type(self).default_dimension[i]) for i in range(len(self.dimension))])
             return np.kron(self.get_default_shape(), np.ones(multiplier))
 
+    # FUNCTIONS
+    def define_functions(self):
+        raise NotImplementedError
+
+    def eval_functions(self):
+        for key, val in self.functions.items():
+            val.eval()
+
     def has_function(self, function):
         if function in self.functions and self.functions[function] is not None:
             return True
@@ -95,12 +107,14 @@ class Concrete(Entity):
         else:
             return None
 
+    # TASK
     def send_task(self, task):
         return self.get_function(Function.TASKED).send(task)
 
     def recv_task_resp(self):
         return self.get_function(Function.TASKED).recv()
 
+    # PYTHON BUILT IN
     def __str__(self):
         return '%s(uuid=.%s,dim=%s,matter=%s)' % (type(self).__name__,
                                                   str(self.uuid)[-8:],
