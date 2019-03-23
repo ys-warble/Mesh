@@ -1,7 +1,8 @@
 from enum import Enum
 
 from WarbleSimulation.System.Entity.Channel.PowerWire import PowerWire
-from WarbleSimulation.System.Entity.Function import BaseFunction
+from WarbleSimulation.System.Entity.Function import BaseFunction, Function
+from WarbleSimulation.System.Entity.Function.Tasked import SystemTask, TaskName
 from WarbleSimulation.util.TypeList import TypeList
 
 
@@ -36,9 +37,29 @@ class PowerInput:
 
     def set_power(self, power):
         self.power = power
+        if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
+            if not self.parent.has_function(Function.TASKED) or \
+                    (self.parent.has_function(Function.TASKED) and self.parent.has_function(
+                        Function.COMPUTE) and self.parent.get_function(Function.COMPUTE).is_computing()):
+                self.parent.active = True
+            else:
+                self.parent.send_task(SystemTask(TaskName.ACTIVE))
+                self.parent.recv_task_resp()
+        else:
+            if not self.parent.has_function(Function.TASKED) or \
+                    (self.parent.has_function(Function.TASKED) and self.parent.has_function(
+                        Function.COMPUTE) and self.parent.get_function(Function.COMPUTE).is_computing()):
+                self.parent.active = False
+            else:
+                task = SystemTask(TaskName.DEACTIVATE)
+                self.parent.send_task(task)
+                self.parent.recv_task_resp()
 
     def get_power(self):
-        return self.power_wires[0].get_power()
+        if len(self.power_wires) > 0:
+            return self.power_wires[0].get_power()
+        else:
+            return self.power
 
 
 class PowerOutput:
