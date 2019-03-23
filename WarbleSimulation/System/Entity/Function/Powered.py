@@ -22,6 +22,9 @@ class ElectricPower(Power):
     def __eq__(self, other):
         return self.power_type == other.power_type and self.voltage == other.voltage
 
+    def __str__(self):
+        return '%s(voltage=%s)' % (type(self).__name__, self.voltage)
+
 
 class PowerInput:
     identifier = 'PowerInput'
