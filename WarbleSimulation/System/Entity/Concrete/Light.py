@@ -42,24 +42,24 @@ class Light(Concrete):
 
         return shape
 
-    def validate_functions(self, selected_features):
-        if (Function.COMPUTE in selected_features or Function.TASKED in selected_features) and \
-                Function.POWERED not in selected_features:
+    def validate_functions(self, selected_functions):
+        if (Function.COMPUTE in selected_functions or Function.TASKED in selected_functions) and \
+                Function.POWERED not in selected_functions:
             return False
         else:
             return True
 
-    def define_functions(self, selected_features):
-        if Function.POWERED in selected_features:
+    def define_functions(self, selected_functions):
+        if Function.POWERED in selected_functions:
             powered = Powered(self)
             powered.power_inputs.append(PowerInput(self))
             powered.input_power_ratings.extend(Light.default_consume_power_ratings)
             self.functions[Function.POWERED] = powered
 
-        if Function.TASKED in selected_features:
+        if Function.TASKED in selected_functions:
             self.functions[Function.TASKED] = LightTasked(self)
 
-        if Function.COMPUTE in selected_features:
+        if Function.COMPUTE in selected_functions:
             self.functions[Function.COMPUTE] = LightCompute(self)
 
 
@@ -89,6 +89,7 @@ class LightCompute(Compute):
 class LightTasked(Tasked):
     tasks = [
         TaskName.GET_SYSTEM_INFO,
+        TaskName.SET_POWER,
         TaskName.ACTIVE,
         TaskName.DEACTIVATE,
 

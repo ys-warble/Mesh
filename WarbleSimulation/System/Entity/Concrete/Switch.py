@@ -14,8 +14,9 @@ class Switch(Concrete):
 
     default_consume_power_ratings = [ElectricPower(110)]
 
-    def __init__(self, uuid, dimension_x=(1, 1, 1)):
-        super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.PLASTIC)
+    def __init__(self, uuid, dimension_x=(1, 1, 1), selected_functions=(Function.POWERED, Function.TASKED)):
+        super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.PLASTIC,
+                         selected_functions=selected_functions)
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
@@ -29,13 +30,22 @@ class Switch(Concrete):
 
         return shape
 
-    def define_functions(self):
-        powered = Powered(self)
-        powered.power_inputs.append(PowerInput(self))
-        powered.power_outputs.append(PowerOutput(self))
-        powered.input_power_ratings.extend(Switch.default_consume_power_ratings)
-        self.functions[Function.POWERED] = powered
-        self.functions[Function.TASKED] = SwitchTasked(self)
+    def validate_functions(self, selected_functions):
+        if Function.POWERED in selected_functions and Function.TASKED in selected_functions:
+            return True
+        else:
+            return False
+
+    def define_functions(self, selected_functions):
+        if Function.POWERED:
+            powered = Powered(self)
+            powered.power_inputs.append(PowerInput(self))
+            powered.power_outputs.append(PowerOutput(self))
+            powered.input_power_ratings.extend(Switch.default_consume_power_ratings)
+            self.functions[Function.POWERED] = powered
+
+        if Function.TASKED:
+            self.functions[Function.TASKED] = SwitchTasked(self)
 
 
 class SwitchTasked(Tasked):

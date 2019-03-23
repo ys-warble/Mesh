@@ -90,10 +90,10 @@ class Concrete(Entity):
             return np.kron(self.get_default_shape(), np.ones(multiplier))
 
     # FUNCTIONS
-    def validate_functions(self, selected_features):
+    def validate_functions(self, selected_functions):
         raise NotImplementedError
 
-    def define_functions(self, selected_features):
+    def define_functions(self, selected_functions):
         raise NotImplementedError
 
     def eval_functions(self):
