@@ -15,8 +15,9 @@ class TaskName(Enum):
     END = 1
 
     GET_SYSTEM_INFO = 101
-    ACTIVE = 102
-    DEACTIVATE = 103
+    SET_POWER = 102
+    ACTIVE = 103
+    DEACTIVATE = 104
 
     GET_INFO = 201
 
@@ -27,9 +28,10 @@ class Status(Enum):
 
 
 class BaseTask:
-    def __init__(self, level, name, *args, **kwargs):
+    def __init__(self, level, name, value=None, *args, **kwargs):
         self.level = level
         self.name = name
+        self.value = value
 
     def __str__(self):
         return "Task(%s,%s)" % (self.level, self.name)
@@ -39,18 +41,18 @@ class BaseTask:
 
 
 class ProgramTask(BaseTask):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(TaskLevel.PROGRAM, name, args, kwargs)
+    def __init__(self, name, value=None, *args, **kwargs):
+        super().__init__(TaskLevel.PROGRAM, name, value, args, kwargs)
 
 
 class SystemTask(BaseTask):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(TaskLevel.SYSTEM, name, args, kwargs)
+    def __init__(self, name, value=None, *args, **kwargs):
+        super().__init__(TaskLevel.SYSTEM, name, value, args, kwargs)
 
 
 class Task(BaseTask):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(TaskLevel.ENTITY, name, args, kwargs)
+    def __init__(self, name, value=None, *args, **kwargs):
+        super().__init__(TaskLevel.ENTITY, name, value, args, kwargs)
 
 
 class TaskResponse:
