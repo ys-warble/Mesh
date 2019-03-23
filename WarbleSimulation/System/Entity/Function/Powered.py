@@ -2,7 +2,7 @@ from enum import Enum
 
 from WarbleSimulation.System.Entity.Channel.PowerWire import PowerWire
 from WarbleSimulation.System.Entity.Function import BaseFunction, Function
-from WarbleSimulation.System.Entity.Function.Tasked import SystemTask, TaskName
+from WarbleSimulation.System.Entity.Function.Tasked import TaskName
 from WarbleSimulation.util.TypeList import TypeList
 
 
@@ -38,22 +38,10 @@ class PowerInput:
     def set_power(self, power):
         self.power = power
         if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
-            if not self.parent.has_function(Function.TASKED) or \
-                    (self.parent.has_function(Function.TASKED) and self.parent.has_function(
-                        Function.COMPUTE) and self.parent.get_function(Function.COMPUTE).is_computing()):
+            if not self.parent.has_function(Function.TASKED):
                 self.parent.active = True
-            else:
-                self.parent.send_task(SystemTask(TaskName.ACTIVE))
-                self.parent.recv_task_resp()
         else:
-            if not self.parent.has_function(Function.TASKED) or \
-                    (self.parent.has_function(Function.TASKED) and self.parent.has_function(
-                        Function.COMPUTE) and self.parent.get_function(Function.COMPUTE).is_computing()):
-                self.parent.active = False
-            else:
-                task = SystemTask(TaskName.DEACTIVATE)
-                self.parent.send_task(task)
-                self.parent.recv_task_resp()
+            self.parent.active = False
 
     def get_power(self):
         if len(self.power_wires) > 0:
@@ -80,6 +68,10 @@ class PowerOutput:
 
 
 class Powered(BaseFunction):
+    tasks = [
+        TaskName.SET_POWER,
+    ]
+
     def __init__(self, entity):
         super().__init__(entity)
         self.power_inputs = TypeList(PowerInput)

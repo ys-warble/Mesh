@@ -45,6 +45,10 @@ class TestLight(AppTestCase):
         self.light.send_task(Task(name=TaskName.GET_INFO))
 
     def test_recv_task_resp(self):
+        self.light.send_task(SystemTask(name=TaskName.SET_POWER, value={'power': ElectricPower(110)}))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
+
         # ProgramTask
         self.light.send_task(ProgramTask(name=TaskName.END))
         self.assertEqual(self.light.recv_task_resp(),
@@ -71,6 +75,10 @@ class TestLight(AppTestCase):
                          }}))
 
     def test_task_no_compute(self):
+        self.light.send_task(SystemTask(name=TaskName.SET_POWER, value={'power': ElectricPower(110)}))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
+
         # SystemTask
         self.light.send_task(SystemTask(name=TaskName.DEACTIVATE))
         self.assertFalse(self.light.active)
@@ -103,6 +111,10 @@ class TestLight(AppTestCase):
                          }}))
 
     def test_task_with_compute(self):
+        self.light.send_task(SystemTask(name=TaskName.SET_POWER, value={'power': ElectricPower(110)}))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
+
         # START COMPUTE
         self.light.send_task(ProgramTask(name=TaskName.START))
         self.light.recv_task_resp()
@@ -145,6 +157,13 @@ class TestLight(AppTestCase):
 
         # END COMPUTE
         self.light.send_task(ProgramTask(name=TaskName.END))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
+
+        self.light.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(self.light.recv_task_resp().value['system_info']['active'])
+
+        self.light.send_task(SystemTask(name=TaskName.SET_POWER, value={'power': ElectricPower(0)}))
         self.assertEqual(self.light.recv_task_resp(),
                          TaskResponse(status=Status.OK, value=None))
 
