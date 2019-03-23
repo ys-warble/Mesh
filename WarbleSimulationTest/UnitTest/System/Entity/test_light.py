@@ -161,6 +161,48 @@ class TestLight(AppTestCase):
                          TaskResponse(status=Status.OK, value=None))
 
         self.light.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(self.light.recv_task_resp().value['system_info']['active'])
+
+        # START COMPUTE
+        self.light.send_task(ProgramTask(name=TaskName.START))
+        self.light.recv_task_resp()
+
+        # SystemTask
+        self.light.send_task(SystemTask(name=TaskName.DEACTIVATE))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
+
+        self.light.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(self.light.recv_task_resp().value['system_info']['active'])
+
+        self.light.send_task(SystemTask(name=TaskName.ACTIVE))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
+
+        self.light.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(self.light.recv_task_resp().value['system_info']['active'])
+
+        # EntityTask
+        self.light.send_task(Task(name=TaskName.GET_INFO))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value={'info': {
+                             'uuid': str(self.light.uuid),
+                             'identifier': type(self.light).identifier,
+                             'type': {
+                                 'actuator': [
+                                     'POWER'
+                                 ],
+                                 'sensor': [],
+                                 'accessor': []
+                             },
+                         }}))
+
+        # END COMPUTE
+        self.light.send_task(ProgramTask(name=TaskName.END))
+        self.assertEqual(self.light.recv_task_resp(),
+                         TaskResponse(status=Status.OK, value=None))
+
+        self.light.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
         self.assertTrue(self.light.recv_task_resp().value['system_info']['active'])
 
         self.light.send_task(SystemTask(name=TaskName.SET_POWER, value={'power': ElectricPower(0)}))
