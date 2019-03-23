@@ -1,7 +1,7 @@
 import numpy as np
 
 from WarbleSimulation.System.Entity import Entity
-from WarbleSimulation.System.Entity.Function import Function
+from WarbleSimulation.System.Entity.Function import Function, FunctionSetError
 
 
 def transform_shape(entity_shape, from_direction, to_direction):
@@ -60,7 +60,7 @@ class Concrete(Entity):
     default_dimension = (1, 1, 1)
     default_orientation = (0, 1, 0)
 
-    def __init__(self, uuid, dimension_x, matter_type):
+    def __init__(self, uuid, dimension_x, matter_type, selected_functions):
         super().__init__(uuid)
         self.dimension_x = dimension_x
         self.dimension = tuple(
@@ -69,7 +69,9 @@ class Concrete(Entity):
 
         # Functions
         self.functions = dict()
-        self.define_functions()
+        if not self.validate_functions(selected_functions):
+            raise FunctionSetError
+        self.define_functions(selected_functions)
         self.eval_functions()
 
     # SHAPE
@@ -88,7 +90,10 @@ class Concrete(Entity):
             return np.kron(self.get_default_shape(), np.ones(multiplier))
 
     # FUNCTIONS
-    def define_functions(self):
+    def validate_functions(self, selected_features):
+        raise NotImplementedError
+
+    def define_functions(self, selected_features):
         raise NotImplementedError
 
     def eval_functions(self):

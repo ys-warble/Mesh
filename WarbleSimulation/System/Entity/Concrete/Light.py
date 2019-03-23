@@ -17,8 +17,10 @@ class Light(Concrete):
 
     default_consume_power_ratings = [ElectricPower(110)]
 
-    def __init__(self, uuid, dimension_x=(1, 1, 1)):
-        super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS)
+    def __init__(self, uuid, dimension_x=(1, 1, 1),
+                 selected_functions=(Function.POWERED, Function.TASKED, Function.COMPUTE)):
+        super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS,
+                         selected_functions=selected_functions)
         self.dimension = tuple(
             [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
@@ -40,14 +42,26 @@ class Light(Concrete):
 
         return shape
 
-    def define_functions(self):
-        powered = Powered(self)
-        powered.power_inputs.append(PowerInput(self))
-        powered.input_power_ratings.extend(Light.default_consume_power_ratings)
-        self.functions[Function.POWERED] = powered
-        self.functions[Function.TASKED] = LightTasked(self)
-        self.functions[Function.COMPUTE] = LightCompute(self)
-        
+    def validate_functions(self, selected_features):
+        if (Function.COMPUTE in selected_features or Function.TASKED in selected_features) and \
+                Function.POWERED not in selected_features:
+            return False
+        else:
+            return True
+
+    def define_functions(self, selected_features):
+        if Function.POWERED in selected_features:
+            powered = Powered(self)
+            powered.power_inputs.append(PowerInput(self))
+            powered.input_power_ratings.extend(Light.default_consume_power_ratings)
+            self.functions[Function.POWERED] = powered
+
+        if Function.TASKED in selected_features:
+            self.functions[Function.TASKED] = LightTasked(self)
+
+        if Function.COMPUTE in selected_features:
+            self.functions[Function.COMPUTE] = LightCompute(self)
+
 
 class LightCompute(Compute):
     def __init__(self, entity):
