@@ -17,3 +17,7 @@ class BaseFunction:
 
     def eval(self):
         raise NotImplementedError
+
+
+class FunctionSetError(Exception):
+    pass

@@ -1,26 +1,15 @@
 import uuid
-from unittest import TestCase
 
 from WarbleSimulation.System.Entity.Concrete.Light import Light
 from WarbleSimulation.System.Entity.Concrete.Table import Table
 from WarbleSimulation.System.SpaceFactor import SpaceFactor
 from WarbleSimulation.System.System import System
-from WarbleSimulation.util import Logger
-from WarbleSimulationTest import test_settings
+from WarbleSimulationTest.AppTestCase import AppTestCase
 
 
-class TestSystem(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.logger = Logger.get_logger(__name__)
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
+class TestSystem(AppTestCase):
     def setUp(self):
-        self.logger.info('')
-        self.logger.info(test_settings.start_title_format(self._testMethodName))
+        super().setUp()
 
         # Create a default system
         self.system_name = 'NewSystem'
@@ -28,10 +17,6 @@ class TestSystem(TestCase):
         self.resolution = 4
 
         self.system = System(name=self.system_name)
-
-    def tearDown(self):
-        self.logger.info(test_settings.end_title_format(self._testMethodName))
-        self.logger.info('')
 
     def test_system_init(self):
         self.assertEqual(self.system_name, self.system.name)

@@ -1,7 +1,8 @@
 from enum import Enum
 
 from WarbleSimulation.System.Entity.Channel.PowerWire import PowerWire
-from WarbleSimulation.System.Entity.Function import BaseFunction
+from WarbleSimulation.System.Entity.Function import BaseFunction, Function
+from WarbleSimulation.System.Entity.Function.Tasked import TaskName
 from WarbleSimulation.util.TypeList import TypeList
 
 
@@ -19,6 +20,12 @@ class ElectricPower(Power):
         super().__init__(PowerType.ELECTRIC)
         self.voltage = voltage
 
+    def __eq__(self, other):
+        return self.power_type == other.power_type and self.voltage == other.voltage
+
+    def __str__(self):
+        return '%s(voltage=%s)' % (type(self).__name__, self.voltage)
+
 
 class PowerInput:
     identifier = 'PowerInput'
@@ -27,6 +34,20 @@ class PowerInput:
         self.parent = parent
         self.power = power
         self.power_wires = TypeList(PowerWire)
+
+    def set_power(self, power):
+        self.power = power
+        if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
+            if not self.parent.has_function(Function.TASKED):
+                self.parent.active = True
+        else:
+            self.parent.active = False
+
+    def get_power(self):
+        if len(self.power_wires) > 0:
+            return self.power_wires[0].get_power()
+        else:
+            return self.power
 
 
 class PowerOutput:
@@ -37,12 +58,27 @@ class PowerOutput:
         self.power = power
         self.power_wires = TypeList(PowerWire)
 
+    def get_power(self):
+        return self.power
+
+    def set_power(self, power):
+        self.power = power
+        for wire in self.power_wires:
+            wire.set_power(self.power)
+
 
 class Powered(BaseFunction):
+    tasks = [
+        TaskName.SET_POWER,
+    ]
+
     def __init__(self, entity):
         super().__init__(entity)
         self.power_inputs = TypeList(PowerInput)
         self.power_outputs = TypeList(PowerOutput)
+
+        self.input_power_ratings = []
+        self.output_power_ratings = []
 
     def eval(self):
         pass

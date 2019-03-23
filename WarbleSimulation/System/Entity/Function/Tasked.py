@@ -15,8 +15,9 @@ class TaskName(Enum):
     END = 1
 
     GET_SYSTEM_INFO = 101
-    ACTIVE = 102
-    DEACTIVATE = 103
+    SET_POWER = 102
+    ACTIVE = 103
+    DEACTIVATE = 104
 
     GET_INFO = 201
 
@@ -27,9 +28,10 @@ class Status(Enum):
 
 
 class BaseTask:
-    def __init__(self, level, name, *args, **kwargs):
+    def __init__(self, level, name, value=None, *args, **kwargs):
         self.level = level
         self.name = name
+        self.value = value
 
     def __str__(self):
         return "Task(%s,%s)" % (self.level, self.name)
@@ -39,22 +41,22 @@ class BaseTask:
 
 
 class ProgramTask(BaseTask):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(TaskLevel.PROGRAM, name, args, kwargs)
+    def __init__(self, name, value=None, *args, **kwargs):
+        super().__init__(TaskLevel.PROGRAM, name, value, args, kwargs)
 
 
 class SystemTask(BaseTask):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(TaskLevel.SYSTEM, name, args, kwargs)
+    def __init__(self, name, value=None, *args, **kwargs):
+        super().__init__(TaskLevel.SYSTEM, name, value, args, kwargs)
 
 
 class Task(BaseTask):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(TaskLevel.ENTITY, name, args, kwargs)
+    def __init__(self, name, value=None, *args, **kwargs):
+        super().__init__(TaskLevel.ENTITY, name, value, args, kwargs)
 
 
 class TaskResponse:
-    def __init__(self, status, value):
+    def __init__(self, status, value=None):
         self.status = status
         self.value = value
 
@@ -66,13 +68,7 @@ class TaskResponse:
 
 
 class Tasked(BaseFunction):
-    tasks = [
-        TaskName.GET_SYSTEM_INFO,
-        TaskName.ACTIVE,
-        TaskName.DEACTIVATE,
-
-        TaskName.GET_INFO,
-    ]
+    tasks = []
 
     def __init__(self, entity):
         super().__init__(entity)
@@ -109,8 +105,10 @@ class Tasked(BaseFunction):
                 self.last_task_response = TaskResponse(status=Status.OK, value=None)
             elif task == ProgramTask(TaskName.END) and compute.is_computing():
                 compute.p_task_pipe.send(task)
+                self.entity.active = compute.p_task_pipe.recv()
                 compute.process.join()
                 compute.process = None
+                self.last_task_response = TaskResponse(status=Status.OK, value=None)
             elif not compute.is_computing():
                 self.last_task_response = send_basic(task)
             elif compute.is_computing():
