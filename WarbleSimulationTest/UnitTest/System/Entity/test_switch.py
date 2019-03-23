@@ -16,3 +16,5 @@ class TestSwitch(TestCase):
         m = MatterType.PLASTIC.value
         np.testing.assert_array_equal(self.power_supply.get_default_shape(), [[[m, m]]])
         self.assertEqual(self.power_supply.get_default_shape().shape, (1, 1, 2))
+
+    # TODO test Tasked in Switch

@@ -3,19 +3,23 @@ import uuid
 from multiprocessing import Process, Pipe, Queue
 
 import numpy as np
+from numpy.testing._private.decorators import deprecated
 
 import WarbleSimulation.System.SpaceFactor as SpaceFactor
 import WarbleSimulation.util.numpy_ext as npx
+from WarbleSimulation.System.Entity.Channel.PowerWire import PowerWire
 from WarbleSimulation.System.Entity.Concrete.AirConditioner import AirConditioner
 from WarbleSimulation.System.Entity.Concrete.Chair import Chair
 from WarbleSimulation.System.Entity.Concrete.Human import Human
 from WarbleSimulation.System.Entity.Concrete.Light import Light
+from WarbleSimulation.System.Entity.Concrete.PowerSupply import PowerSupply
 from WarbleSimulation.System.Entity.Concrete.SmokeDetector import SmokeDetector
+from WarbleSimulation.System.Entity.Concrete.Switch import Switch
 from WarbleSimulation.System.Entity.Concrete.Table import Table
 from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.Entity.Concrete.Wardrobe import Wardrobe
-from WarbleSimulation.System.Entity.Function.Tasked import Task
+from WarbleSimulation.System.Entity.Function.Tasked import Task, SystemTask, TaskName, TaskResponse, Status
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Plotter
 from WarbleSimulationTest import test_settings
@@ -198,6 +202,7 @@ class TestMain(AppTestCase):
             opacity=0.6
         )
 
+    @deprecated
     def test_main_4(self):
         # Create System
         self.system = System('MyNewSystem')
@@ -234,14 +239,74 @@ class TestMain(AppTestCase):
 
         # Multiprocessing Do
         for entity_process in mp:
-            task = Task(task_name=Command.ACTIVE)
+            task = Task(task_name=TaskName.ACTIVE)
+            self.logger.info(task)
             mp[entity_process]['p_pipe'].send(task)
         for entity_process in mp:
-            task = Task(task_name=Command.GET_INFO)
+            task = Task(task_name=TaskName.GET_INFO)
             mp[entity_process]['p_pipe'].send(task)
 
         # Multiprocessing End
         for entity_process in mp:
-            task = Task(task_name=Command.END)
+            task = Task(task_name=TaskName.END)
             mp[entity_process]['p_pipe'].send(task)
             mp[entity_process]['process'].join()
+
+    def test_main_5(self):
+        # Create System
+        self.system = System('MyNewSystem')
+
+        # Put Space on the System
+        self.system.put_space(dimension=(40, 30, 12), resolution=1,
+                              space_factor_types=[i for i in SpaceFactor.SpaceFactor])
+
+        # Put Entity on the Space
+        power_supply = PowerSupply(uuid=uuid.uuid4())
+        light_switch1 = Switch(uuid=uuid.uuid4())
+        wire_ls1 = PowerWire(power_supply, light_switch1)
+        light1 = Light(uuid=uuid.uuid4())
+        wire_l1 = PowerWire(light_switch1, light1)
+
+        self.system.put_entity(power_supply, (19, 14, 9))
+        self.system.put_entity(light_switch1, (19, 14, 9))
+        self.system.put_entity(light1, (9, 14, 9))
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch1.recv_task_resp().value['system_info']['active'])
+        light1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light1.recv_task_resp().value['system_info']['active'])
+
+        # Turn On PowerSupply
+        power_supply.send_task(SystemTask(name=TaskName.ACTIVE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), power_supply.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch1.recv_task_resp().value['system_info']['active'])
+        light1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light1.recv_task_resp().value['system_info']['active'])
+
+        # Turn On Switch
+        light_switch1.send_task(SystemTask(name=TaskName.ACTIVE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), light_switch1.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(light_switch1.recv_task_resp().value['system_info']['active'])
+        light1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light1.recv_task_resp().value['system_info']['active'])
+
+        # Turn On Light
+        light1.send_task(SystemTask(name=TaskName.ACTIVE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), light1.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(light_switch1.recv_task_resp().value['system_info']['active'])
+        light1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(light1.recv_task_resp().value['system_info']['active'])
