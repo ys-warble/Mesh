@@ -37,3 +37,9 @@ class PowerWire(Channel):
             self.power_input.power_wires.append(self)
         else:
             raise TypeError
+
+    def set_power(self, power):
+        self.power_input.set_power(power)
+
+    def get_power(self):
+        return self.power_output.get_power()
