@@ -35,7 +35,7 @@ class PowerInput:
         self.power = power
         self.power_wires = TypeList(PowerWire)
 
-    def set_power(self, power):
+    def set_power(self, power=ElectricPower(voltage=0)):
         self.power = power
         if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
             if not self.parent.has_function(Function.TASKED):
@@ -61,7 +61,7 @@ class PowerOutput:
     def get_power(self):
         return self.power
 
-    def set_power(self, power):
+    def set_power(self, power=ElectricPower(voltage=0)):
         self.power = power
         for wire in self.power_wires:
             wire.set_power(self.power)
