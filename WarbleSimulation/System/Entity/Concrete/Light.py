@@ -81,6 +81,7 @@ class LightCompute(Compute):
                     task = self.c_task_pipe.recv()
 
                     if task.level == TaskLevel.PROGRAM and task.name == TaskName.END:
+                        self.c_task_pipe.send(self.entity.active)
                         break
                     else:
                         self.c_task_pipe.send(self.entity.get_function(Function.TASKED).handle(task))

@@ -105,6 +105,7 @@ class Tasked(BaseFunction):
                 self.last_task_response = TaskResponse(status=Status.OK, value=None)
             elif task == ProgramTask(TaskName.END) and compute.is_computing():
                 compute.p_task_pipe.send(task)
+                self.entity.active = compute.p_task_pipe.recv()
                 compute.process.join()
                 compute.process = None
                 self.last_task_response = TaskResponse(status=Status.OK, value=None)
