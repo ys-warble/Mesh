@@ -4,7 +4,7 @@ from WarbleSimulation import settings
 from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Compute import Compute
-from WarbleSimulation.System.Entity.Function.Powered import PowerInput, Powered
+from WarbleSimulation.System.Entity.Function.Powered import PowerInput, Powered, ElectricPower
 from WarbleSimulation.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, TaskResponse, \
     Tasked
 from WarbleSimulation.System.SpaceFactor import MatterType
@@ -14,6 +14,8 @@ class Light(Concrete):
     identifier = 'light'
     default_dimension = (3, 3, 3)
     default_orientation = (0, 1, 0)
+
+    default_consume_power_ratings = [ElectricPower(110)]
 
     def __init__(self, uuid, dimension_x=(1, 1, 1)):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS)
@@ -41,6 +43,7 @@ class Light(Concrete):
     def define_functions(self):
         powered = Powered(self)
         powered.power_inputs.append(PowerInput(self))
+        powered.input_power_ratings.extend(Light.default_consume_power_ratings)
         self.functions[Function.POWERED] = powered
         self.functions[Function.TASKED] = LightTasked(self)
         self.functions[Function.COMPUTE] = LightCompute(self)
@@ -92,7 +95,10 @@ class LightTasked(Tasked):
                 }
             }
 
-        if task.level == TaskLevel.ENTITY:
+        powered = self.entity.get_function(Function.POWERED)
+        power = powered.get_power_input().get_power()
+
+        if task.level == TaskLevel.ENTITY and power in powered.input_power_ratings:
             if task.name == TaskName.GET_INFO:
                 task_response = TaskResponse(Status.OK, {'info': get_info()})
             else:
@@ -104,8 +110,11 @@ class LightTasked(Tasked):
                 system_info['active'] = self.entity.active
                 task_response = TaskResponse(status=Status.OK, value={'system_info': system_info})
             elif task.name == TaskName.ACTIVE:
-                self.entity.active = True
-                task_response = TaskResponse(status=Status.OK, value=None)
+                if power in powered.input_power_ratings:
+                    self.entity.active = True
+                    task_response = TaskResponse(status=Status.OK, value=None)
+                else:
+                    task_response = TaskResponse(status=Status.ERROR, value={'error': 'No Input Power'})
             elif task.name == TaskName.DEACTIVATE:
                 self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)

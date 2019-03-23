@@ -2,7 +2,7 @@ import numpy as np
 
 from WarbleSimulation.System.Entity.Concrete import Concrete
 from WarbleSimulation.System.Entity.Function import Function
-from WarbleSimulation.System.Entity.Function.Powered import PowerInput, PowerOutput, Powered
+from WarbleSimulation.System.Entity.Function.Powered import PowerInput, PowerOutput, Powered, ElectricPower
 from WarbleSimulation.System.Entity.Function.Tasked import Tasked, TaskLevel, TaskResponse, Status, TaskName
 from WarbleSimulation.System.SpaceFactor import MatterType
 
@@ -11,6 +11,8 @@ class Switch(Concrete):
     identifier = 'switch'
     default_dimension = (1, 1, 2)
     default_orientation = (0, 1, 0)
+
+    default_consume_power_ratings = [ElectricPower(110)]
 
     def __init__(self, uuid, dimension_x=(1, 1, 1)):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.PLASTIC)
@@ -31,6 +33,7 @@ class Switch(Concrete):
         powered = Powered(self)
         powered.power_inputs.append(PowerInput(self))
         powered.power_outputs.append(PowerOutput(self))
+        powered.input_power_ratings.extend(Switch.default_consume_power_ratings)
         self.functions[Function.POWERED] = powered
         self.functions[Function.TASKED] = SwitchTasked(self)
 
@@ -56,7 +59,7 @@ class SwitchTasked(Tasked):
                 }
             }
 
-        if task.level == TaskLevel.ENTITY:
+        if self.entity.active and task.level == TaskLevel.ENTITY:
             task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         elif task.level == TaskLevel.SYSTEM:
@@ -66,6 +69,12 @@ class SwitchTasked(Tasked):
                 task_response = TaskResponse(status=Status.OK, value={'system_info': system_info})
             elif task.name == TaskName.ACTIVE:
                 self.entity.active = True
+
+                if self.entity.has_function(Function.POWERED):
+                    powered = self.entity.get_function(Function.POWERED)
+                    for i in powered.power_outputs:
+                        i.set_power(powered.power_inputs[0].get_power())
+
                 task_response = TaskResponse(status=Status.OK, value=None)
             elif task.name == TaskName.DEACTIVATE:
                 self.entity.active = False
