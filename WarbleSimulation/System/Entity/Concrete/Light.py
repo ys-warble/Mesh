@@ -89,7 +89,6 @@ class LightCompute(Compute):
 class LightTasked(Tasked):
     tasks = [
         TaskName.GET_SYSTEM_INFO,
-        TaskName.SET_POWER,
         TaskName.ACTIVE,
         TaskName.DEACTIVATE,
 
