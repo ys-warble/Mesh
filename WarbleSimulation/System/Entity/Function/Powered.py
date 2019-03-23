@@ -19,6 +19,9 @@ class ElectricPower(Power):
         super().__init__(PowerType.ELECTRIC)
         self.voltage = voltage
 
+    def __eq__(self, other):
+        return self.power_type == other.power_type and self.voltage == other.voltage
+
 
 class PowerInput:
     identifier = 'PowerInput'
@@ -27,6 +30,12 @@ class PowerInput:
         self.parent = parent
         self.power = power
         self.power_wires = TypeList(PowerWire)
+
+    def set_power(self, power):
+        self.power = power
+
+    def get_power(self):
+        return self.power_wires[0].get_power()
 
 
 class PowerOutput:
@@ -37,12 +46,23 @@ class PowerOutput:
         self.power = power
         self.power_wires = TypeList(PowerWire)
 
+    def get_power(self):
+        return self.power
+
+    def set_power(self, power):
+        self.power = power
+        for wire in self.power_wires:
+            wire.set_power(self.power)
+
 
 class Powered(BaseFunction):
     def __init__(self, entity):
         super().__init__(entity)
         self.power_inputs = TypeList(PowerInput)
         self.power_outputs = TypeList(PowerOutput)
+
+        self.input_power_ratings = []
+        self.output_power_ratings = []
 
     def eval(self):
         pass
