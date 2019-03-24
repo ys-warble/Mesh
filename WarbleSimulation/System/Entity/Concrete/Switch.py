@@ -88,6 +88,12 @@ class SwitchTasked(Tasked):
                 task_response = TaskResponse(status=Status.OK, value=None)
             elif task.name == TaskName.DEACTIVATE:
                 self.entity.active = False
+
+                if self.entity.has_function(Function.POWERED):
+                    powered = self.entity.get_function(Function.POWERED)
+                    for i in powered.power_outputs:
+                        i.set_power()
+
                 task_response = TaskResponse(status=Status.OK, value=None)
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})

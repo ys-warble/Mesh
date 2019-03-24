@@ -17,6 +17,7 @@ from WarbleSimulation.System.Entity.Concrete.Table import Table
 from WarbleSimulation.System.Entity.Concrete.Thermostat import Thermostat
 from WarbleSimulation.System.Entity.Concrete.Wall import Wall
 from WarbleSimulation.System.Entity.Concrete.Wardrobe import Wardrobe
+from WarbleSimulation.System.Entity.Function import Function
 from WarbleSimulation.System.Entity.Function.Tasked import SystemTask, TaskName, TaskResponse, Status
 from WarbleSimulation.System.System import System
 from WarbleSimulation.util import Plotter
@@ -258,3 +259,95 @@ class TestMain(AppTestCase):
         self.assertTrue(light_switch1.recv_task_resp().value['system_info']['active'])
         light1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
         self.assertTrue(light1.recv_task_resp().value['system_info']['active'])
+
+    def test_main_6(self):
+        # Create System
+        self.system = System('MyNewSystem')
+
+        # Put Space on the System
+        self.system.put_space(dimension=(40, 30, 12), resolution=1,
+                              space_factor_types=[i for i in SpaceFactor.SpaceFactor])
+
+        # Put Entity on the Space
+        power_supply = PowerSupply(uuid=uuid.uuid4())
+        light_switch1 = Switch(uuid=uuid.uuid4())
+        wire_ls1 = PowerWire(power_supply, light_switch1)
+        light1 = Light(uuid=uuid.uuid4(), selected_functions=(Function.POWERED,))
+        wire_l1 = PowerWire(light_switch1, light1)
+
+        light_switch2 = Switch(uuid=uuid.uuid4())
+        wire_ls2 = PowerWire(power_supply, light_switch2)
+        light2 = Light(uuid=uuid.uuid4(), selected_functions=(Function.POWERED,))
+        wire_l2 = PowerWire(light_switch2, light2)
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch1.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light1.active)
+        light_switch2.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch2.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light2.active)
+
+        # Turn On PowerSupply
+        power_supply.send_task(SystemTask(name=TaskName.ACTIVE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), power_supply.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch1.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light1.active)
+        light_switch2.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch2.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light2.active)
+
+        # Turn On Switch
+        light_switch1.send_task(SystemTask(name=TaskName.ACTIVE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), light_switch1.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(light_switch1.recv_task_resp().value['system_info']['active'])
+        self.assertTrue(light1.active)
+        light_switch2.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch2.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light2.active)
+
+        light_switch2.send_task(SystemTask(name=TaskName.ACTIVE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), light_switch2.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(light_switch1.recv_task_resp().value['system_info']['active'])
+        self.assertTrue(light1.active)
+        light_switch2.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(light_switch2.recv_task_resp().value['system_info']['active'])
+        self.assertTrue(light2.active)
+
+        # Turn Off Switch
+        light_switch1.send_task(SystemTask(name=TaskName.DEACTIVATE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), light_switch1.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch1.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light1.active)
+        light_switch2.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(light_switch2.recv_task_resp().value['system_info']['active'])
+        self.assertTrue(light2.active)
+
+        light_switch2.send_task(SystemTask(name=TaskName.DEACTIVATE))
+        self.assertEqual(TaskResponse(status=Status.OK, value=None), light_switch2.recv_task_resp())
+
+        power_supply.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertTrue(power_supply.recv_task_resp().value['system_info']['active'])
+        light_switch1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch1.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light1.active)
+        light_switch2.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
+        self.assertFalse(light_switch2.recv_task_resp().value['system_info']['active'])
+        self.assertFalse(light2.active)
