@@ -9,8 +9,7 @@ Mesh is an application that provides a model of 3-dimensional space with its con
 * To create and evaluate datasets in IoT research
 * To help the research and development in pervasive computing
 
-## Current Status
-### Early Development
+## Current Status: *Early Development*
 Modules are actively being defined. Visualization is just enough for development, supported by Plotly, without optimization. Interface to the application has not been well-documented. However, the test cases show how to use with the application.
 Supported entity:
 * Light
