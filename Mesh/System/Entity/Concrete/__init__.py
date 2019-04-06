@@ -102,10 +102,7 @@ class Concrete(Entity):
             val.eval()
 
     def has_function(self, function):
-        if function in self.functions and self.functions[function] is not None:
-            return True
-        else:
-            return False
+        return function in self.functions and self.functions[function] is not None
 
     def get_function(self, function):
         if self.has_function(function):
