@@ -12,8 +12,6 @@ class Chair(Concrete):
     def __init__(self, uuid, dimension_x=(1, 1, 1), selected_functions=()):
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.WOOD,
                          selected_functions=selected_functions)
-        self.dimension = tuple(
-            [type(self).default_dimension[i] * self.dimension_x[i] for i in range(len(type(self).default_dimension))])
 
     def get_default_shape(self):
         i = self.matter_type.value
