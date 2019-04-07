@@ -53,10 +53,6 @@ class TestPowerSupply(AppTestCase):
 
     def test_task(self):
         # ProgramTask
-        self.power_supply.send_task(ProgramTask(name=TaskName.START))
-        self.assertEqual(self.power_supply.recv_task_resp(),
-                         TaskResponse(status=Status.ERROR, value={'error': 'Not Implemented'}))
-
         self.power_supply.send_task(ProgramTask(name=TaskName.END))
         self.assertEqual(self.power_supply.recv_task_resp(),
                          TaskResponse(status=Status.ERROR, value={'error': 'Not Implemented'}))
