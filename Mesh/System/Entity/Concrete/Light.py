@@ -1,6 +1,5 @@
 import numpy as np
 
-from Mesh import settings
 from Mesh.System.Entity.Concrete import Concrete
 from Mesh.System.Entity.Function import Function
 from Mesh.System.Entity.Function.Compute import Compute
@@ -19,9 +18,9 @@ class Light(Concrete):
 
     def __init__(self, uuid, dimension_x=(1, 1, 1),
                  selected_functions=(Function.POWERED, Function.TASKED, Function.COMPUTE)):
+        self.active = False
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS,
                          selected_functions=selected_functions)
-        self.active = False
 
     def get_default_shape(self):
         i = self.matter_type.value
@@ -57,31 +56,7 @@ class Light(Concrete):
             self.functions[Function.TASKED] = LightTasked(self)
 
         if Function.COMPUTE in selected_functions:
-            self.functions[Function.COMPUTE] = LightCompute(self)
-
-
-class LightCompute(Compute):
-    def __init__(self, entity):
-        super().__init__(entity)
-
-    def run(self):
-        if self.c_task_pipe is None:
-            return
-
-        while True:
-            # TODO still need much definition and design decisions
-
-            # Do the submitted task
-            if self.entity.has_function(Function.TASKED):
-                # Do the submitted Task
-                if self.c_task_pipe is not None and self.c_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
-                    task = self.c_task_pipe.recv()
-
-                    if task.level == TaskLevel.PROGRAM and task.name == TaskName.END:
-                        self.c_task_pipe.send(self.entity.active)
-                        break
-                    else:
-                        self.c_task_pipe.send(self.entity.get_function(Function.TASKED).handle(task))
+            self.functions[Function.COMPUTE] = Compute(self)
 
 
 class LightTasked(Tasked):
@@ -131,13 +106,16 @@ class LightTasked(Tasked):
                 self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)
             elif task.name == TaskName.SET_POWER:
-                powered.get_power_input().set_power(task.value['power'])
+                powered.get_power_input().power = task.value['power']
                 task_response = TaskResponse(status=Status.OK, value=None)
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         elif task.level == TaskLevel.PROGRAM:
-            task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
+            if task.name == TaskName.END:
+                task_response = self.handle_end()
+            else:
+                task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         else:
             task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
