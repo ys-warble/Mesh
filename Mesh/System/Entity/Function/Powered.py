@@ -37,11 +37,13 @@ class PowerInput:
 
     def set_power(self, power=ElectricPower(voltage=0)):
         self.power = power
-        if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
-            if not self.parent.has_function(Function.TASKED):
-                self.parent.active = True
+        if self.parent.has_function(Function.TASKED):
+            self.parent.send_task(SystemTask(name=TaskName.SET_POWER, value={'power': power}))
         else:
-            self.parent.active = False
+            if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
+                self.parent.active = True
+            else:
+                self.parent.active = False
 
     def get_power(self):
         if len(self.power_wires) > 0:
