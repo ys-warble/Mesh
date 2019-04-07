@@ -1,5 +1,4 @@
 from enum import Enum
-from multiprocessing import Process
 
 from Mesh.System.Entity.Function import BaseFunction, Function
 
@@ -11,7 +10,6 @@ class TaskLevel(Enum):
 
 
 class TaskName(Enum):
-    START = 0
     END = 1
 
     GET_SYSTEM_INFO = 101
@@ -85,6 +83,12 @@ class Tasked(BaseFunction):
             except AttributeError:
                 pass
 
+    def init(self):
+        pass
+
+    def terminate(self):
+        pass
+
     def validate(self, task):
         if self.supported_tasks is None:
             self.eval()
@@ -124,12 +128,6 @@ class Tasked(BaseFunction):
         temp = self.last_task_response
         self.last_task_response = None
         return temp
-
-    def main_handle(self, task):
-        if not self.validate(task):
-            return TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
-        else:
-            return self.handle(task)
 
     def handle(self, task):
         raise NotImplementedError

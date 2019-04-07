@@ -2,7 +2,7 @@ from enum import Enum
 
 from Mesh.System.Entity.Channel.PowerWire import PowerWire
 from Mesh.System.Entity.Function import BaseFunction, Function
-from Mesh.System.Entity.Function.Tasked import TaskName
+from Mesh.System.Entity.Function.Tasked import TaskName, SystemTask
 from Mesh.util.TypeList import TypeList
 
 
@@ -81,6 +81,12 @@ class Powered(BaseFunction):
         self.output_power_ratings = []
 
     def eval(self):
+        pass
+
+    def init(self):
+        pass
+
+    def terminate(self):
         pass
 
     def get_power_input(self, index=0):
