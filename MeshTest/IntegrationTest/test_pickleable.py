@@ -21,10 +21,9 @@ class TestPickleable(AppTestCase):
     def test_light(self):
         light = Light(uuid=uuid.uuid4())
 
-        try:
-            pickle.dumps(light)
-        except PicklingError:
-            self.fail('Space is NOT pickable')
+        self.assertRaises(TypeError, lambda: pickle.dumps(light))
+
+        light.destroy()
 
     def test_system(self):
         system = System(name='MyNewSystem')
@@ -33,7 +32,6 @@ class TestPickleable(AppTestCase):
         light = Light(uuid=uuid.uuid4())
         system.put_entity(light, (0, 0, 0))
 
-        try:
-            pickle.dumps(system)
-        except PicklingError:
-            self.fail('Space is NOT pickable')
+        self.assertRaises(TypeError, lambda: pickle.dumps(system))
+
+        light.destroy()
