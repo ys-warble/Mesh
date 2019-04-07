@@ -45,6 +45,8 @@ class TestSystem(AppTestCase):
         self.assertTrue((table1, (0, 0, 0), None) in self.system.entities)
         self.assertTrue((light1, (1, 1, 1), None) in self.system.entities)
 
+        light1.destroy()
+
     def test_put_entity_invalid(self):
         # Put Entity on the Space
         table1 = Table(uuid=uuid.uuid4(), dimension_x=(1, 1, 1))
