@@ -74,6 +74,10 @@ class Concrete(Entity):
             raise FunctionSetError
         self.define_functions(selected_functions)
         self.eval_functions()
+        self.init_functions()
+
+    def destroy(self):
+        self.terminate_functions()
 
     # SHAPE
     def get_shape(self):
@@ -101,6 +105,10 @@ class Concrete(Entity):
         for key, val in self.functions.items():
             val.eval()
 
+    def init_functions(self):
+        for key, val in self.functions.items():
+            val.init()
+
     def has_function(self, function):
         return function in self.functions and self.functions[function] is not None
 
@@ -109,6 +117,10 @@ class Concrete(Entity):
             return self.functions[function]
         else:
             return None
+
+    def terminate_functions(self):
+        for key, val in self.functions.items():
+            val.terminate()
 
     # TASK
     def send_task(self, task):

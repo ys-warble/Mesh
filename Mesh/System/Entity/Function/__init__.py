@@ -18,6 +18,12 @@ class BaseFunction:
     def eval(self):
         raise NotImplementedError
 
+    def init(self):
+        raise NotImplementedError
+
+    def terminate(self):
+        raise NotImplementedError
+
 
 class FunctionSetError(Exception):
     pass
