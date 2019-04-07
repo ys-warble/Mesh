@@ -106,7 +106,10 @@ class LightTasked(Tasked):
                 self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)
             elif task.name == TaskName.SET_POWER:
-                powered.get_power_input().power = task.value['power']
+                power = task.value['power']
+                powered.get_power_input().power = power
+                if power not in powered.input_power_ratings:
+                    self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
