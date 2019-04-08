@@ -1,7 +1,7 @@
 import numpy as np
 
 from Mesh.System.Entity import Entity
-from Mesh.System.Entity.Function import Function, FunctionSetError
+from Mesh.System.Entity.Function import Function, FunctionSetError, FunctionUnsupportedError
 
 
 def transform_shape(entity_shape, from_direction, to_direction):
@@ -74,6 +74,10 @@ class Concrete(Entity):
             raise FunctionSetError
         self.define_functions(selected_functions)
         self.eval_functions()
+        self.init_functions()
+
+    def destroy(self):
+        self.terminate_functions()
 
     # SHAPE
     def get_shape(self):
@@ -101,11 +105,12 @@ class Concrete(Entity):
         for key, val in self.functions.items():
             val.eval()
 
+    def init_functions(self):
+        for key, val in self.functions.items():
+            val.init()
+
     def has_function(self, function):
-        if function in self.functions and self.functions[function] is not None:
-            return True
-        else:
-            return False
+        return function in self.functions and self.functions[function] is not None
 
     def get_function(self, function):
         if self.has_function(function):
@@ -113,12 +118,22 @@ class Concrete(Entity):
         else:
             return None
 
+    def terminate_functions(self):
+        for key, val in self.functions.items():
+            val.terminate()
+
     # TASK
     def send_task(self, task):
-        return self.get_function(Function.TASKED).send(task)
+        try:
+            return self.get_function(Function.TASKED).send(task)
+        except AttributeError:
+            raise FunctionUnsupportedError(Function.TASKED.value)
 
     def recv_task_resp(self):
-        return self.get_function(Function.TASKED).recv()
+        try:
+            return self.get_function(Function.TASKED).recv()
+        except AttributeError:
+            raise FunctionUnsupportedError(Function.TASKED.value)
 
     # PYTHON BUILT IN
     def __str__(self):

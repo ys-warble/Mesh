@@ -1,5 +1,4 @@
 from enum import Enum
-from multiprocessing import Process
 
 from Mesh.System.Entity.Function import BaseFunction, Function
 
@@ -11,7 +10,6 @@ class TaskLevel(Enum):
 
 
 class TaskName(Enum):
-    START = 0
     END = 1
 
     GET_SYSTEM_INFO = 101
@@ -25,6 +23,7 @@ class TaskName(Enum):
 class Status(Enum):
     OK = 0
     ERROR = 1
+    END = -1
 
 
 class BaseTask:
@@ -85,6 +84,12 @@ class Tasked(BaseFunction):
             except AttributeError:
                 pass
 
+    def init(self):
+        pass
+
+    def terminate(self):
+        pass
+
     def validate(self, task):
         if self.supported_tasks is None:
             self.eval()
@@ -93,43 +98,28 @@ class Tasked(BaseFunction):
             task.name.value / 100) * 100) else False
 
     def send(self, task):
-        def send_basic(t_task):
-            return self.main_handle(t_task)
-
         self.last_task = task
-        if self.entity.has_function(Function.COMPUTE):
-            compute = self.entity.get_function(Function.COMPUTE)
-            if task == ProgramTask(TaskName.START) and not compute.is_computing():
-                compute.process = Process(target=compute.run)
-                compute.process.start()
-                self.last_task_response = TaskResponse(status=Status.OK, value=None)
-            elif task == ProgramTask(TaskName.END) and compute.is_computing():
-                compute.p_task_pipe.send(task)
-                self.entity.active = compute.p_task_pipe.recv()
-                compute.process.join()
-                compute.process = None
-                self.last_task_response = TaskResponse(status=Status.OK, value=None)
-            elif not compute.is_computing():
-                self.last_task_response = send_basic(task)
-            elif compute.is_computing():
-                compute.p_task_pipe.send(task)
+
+        if not self.validate(task):
+            self.last_task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
         else:
-            self.last_task_response = send_basic(task)
+            if self.entity.has_function(Function.COMPUTE):
+                compute = self.entity.get_function(Function.COMPUTE)
+                compute.p_task_pipe.send(task)
+                self.last_task_response = self.entity.get_function(Function.COMPUTE).p_task_pipe.recv()
+            else:
+                self.last_task_response = self.handle(task)
 
     def recv(self):
-        if self.entity.has_function(Function.COMPUTE) and self.entity.get_function(Function.COMPUTE).is_computing():
-            if self.last_task != ProgramTask(TaskName.START):
-                self.last_task_response = self.entity.get_function(Function.COMPUTE).p_task_pipe.recv()
+        # if self.entity.has_function(Function.COMPUTE):
+        #     self.last_task_response = self.entity.get_function(Function.COMPUTE).p_task_pipe.recv()
 
         temp = self.last_task_response
         self.last_task_response = None
         return temp
 
-    def main_handle(self, task):
-        if not self.validate(task):
-            return TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
-        else:
-            return self.handle(task)
-
     def handle(self, task):
         raise NotImplementedError
+
+    def handle_end(self):
+        return TaskResponse(Status.END, value=None)

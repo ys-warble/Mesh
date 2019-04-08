@@ -94,6 +94,8 @@ class TestMain(AppTestCase):
             filename=os.path.join(test_settings.actual_path, self._testMethodName + '_matter_plot.html'),
             auto_open=test_settings.auto_open)
 
+        light1.destroy()
+
     def test_main_3(self):
         # Create System
         self.system = System('MyNewSystem')
@@ -201,6 +203,8 @@ class TestMain(AppTestCase):
             opacity=0.6
         )
 
+        light1.destroy()
+
     def test_main_5(self):
         # Create System
         self.system = System('MyNewSystem')
@@ -259,6 +263,10 @@ class TestMain(AppTestCase):
         self.assertTrue(light_switch1.recv_task_resp().value['system_info']['active'])
         light1.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
         self.assertTrue(light1.recv_task_resp().value['system_info']['active'])
+
+        power_supply.destroy()
+        light_switch1.destroy()
+        light1.destroy()
 
     def test_main_6(self):
         # Create System
@@ -351,3 +359,9 @@ class TestMain(AppTestCase):
         light_switch2.send_task(SystemTask(name=TaskName.GET_SYSTEM_INFO))
         self.assertFalse(light_switch2.recv_task_resp().value['system_info']['active'])
         self.assertFalse(light2.active)
+
+        power_supply.destroy()
+        light_switch1.destroy()
+        light_switch2.destroy()
+        light1.destroy()
+        light2.destroy()

@@ -2,7 +2,7 @@ from enum import Enum
 
 from Mesh.System.Entity.Channel.PowerWire import PowerWire
 from Mesh.System.Entity.Function import BaseFunction, Function
-from Mesh.System.Entity.Function.Tasked import TaskName
+from Mesh.System.Entity.Function.Tasked import TaskName, SystemTask
 from Mesh.util.TypeList import TypeList
 
 
@@ -37,11 +37,13 @@ class PowerInput:
 
     def set_power(self, power=ElectricPower(voltage=0)):
         self.power = power
-        if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
-            if not self.parent.has_function(Function.TASKED):
-                self.parent.active = True
+        if self.parent.has_function(Function.TASKED):
+            self.parent.send_task(SystemTask(name=TaskName.SET_POWER, value={'power': power}))
         else:
-            self.parent.active = False
+            if self.power in self.parent.get_function(Function.POWERED).input_power_ratings:
+                self.parent.active = True
+            else:
+                self.parent.active = False
 
     def get_power(self):
         if len(self.power_wires) > 0:
@@ -81,6 +83,12 @@ class Powered(BaseFunction):
         self.output_power_ratings = []
 
     def eval(self):
+        pass
+
+    def init(self):
+        pass
+
+    def terminate(self):
         pass
 
     def get_power_input(self, index=0):

@@ -1,13 +1,13 @@
-from multiprocessing import Pipe
+from multiprocessing import Pipe, Process
 
-from Mesh.System.Entity.Function import BaseFunction
-from Mesh.System.Entity.Function.Tasked import TaskName
+from Mesh import settings
+from Mesh.System.Entity.Function import BaseFunction, Function
+from Mesh.System.Entity.Function.Tasked import Status, TaskName, ProgramTask
 
 
 class Compute(BaseFunction):
     tasks = [
-        TaskName.START,
-        TaskName.END,
+        TaskName.END
     ]
 
     def __init__(self, entity):
@@ -16,10 +16,24 @@ class Compute(BaseFunction):
         self.p_task_pipe, self.c_task_pipe = Pipe()
 
     def eval(self):
-        pass
+        self.process = Process(target=self.run, args=(self.entity,))
 
     def is_computing(self):
         return self.process is not None
 
-    def run(self):
-        raise NotImplementedError
+    def init(self):
+        self.process.start()
+
+    def terminate(self):
+        if self.process.is_alive():
+            self.entity.send_task(ProgramTask(TaskName.END))
+
+    def run(self, entity):
+        while True:
+            if self.c_task_pipe.poll(settings.ENTITY_TASK_POLLING_DURATION):
+                task = self.c_task_pipe.recv()
+                task_resp = entity.get_function(Function.TASKED).handle(task)
+                self.c_task_pipe.send(task_resp)
+
+                if task_resp.status == Status.END:
+                    break
