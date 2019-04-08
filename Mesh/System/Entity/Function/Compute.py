@@ -16,17 +16,17 @@ class Compute(BaseFunction):
         self.p_task_pipe, self.c_task_pipe = Pipe()
 
     def eval(self):
-        self.process = Process(target=self.run)
+        self.process = Process(target=self.run, args=(self.entity,))
 
     def is_computing(self):
         return self.process is not None
 
     def init(self):
-        self.process = Process(target=self.run, args=(self.entity,))
         self.process.start()
 
     def terminate(self):
-        self.entity.send_task(ProgramTask(TaskName.END))
+        if self.process.is_alive():
+            self.entity.send_task(ProgramTask(TaskName.END))
 
     def run(self, entity):
         while True:
