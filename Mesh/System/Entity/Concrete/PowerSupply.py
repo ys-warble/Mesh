@@ -8,7 +8,7 @@ from Mesh.System.SpaceFactor import MatterType
 
 
 class PowerSupply(Concrete):
-    identifier = 'PowerSupply'
+    identifier = 'power_supply'
     default_dimension = (1, 1, 1)
     default_orientation = (0, 1, 0)
 
