@@ -91,6 +91,34 @@ class System:
 
         return True
 
+    def get_entity(self, index):
+        if index < len(self.entities):
+            return self.entities[index][0]
+        else:
+            raise IndexError
+
     def remove_entity(self, entity):
         # TODO: Implement
         raise NotImplementedError
+
+    def destroy(self):
+        for row in self.entities:
+            row[0].destroy()
+
+    def __str__(self):
+        string = ''
+        string += 'System'
+        string += '('
+        string += '\n  name=%s,' % self.name
+
+        string += '\n  space=%s,' % str(self.space).replace('\n', '\n  ')
+
+        string += '\n  entities=['
+        entities = ['    (%s,loc=%s,ori=%s)' % (row[0], row[1], row[2]) for row in self.entities]
+        string += '\n'
+        string += '%s' % ',\n'.join(entities)
+
+        string += '\n  ]'
+        string += ')'
+
+        return string
