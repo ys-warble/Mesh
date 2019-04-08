@@ -6,7 +6,7 @@ class Space:
         if space_factor_types is None:
             space_factor_types = []
 
-        if isinstance(dimension, tuple) \
+        if (isinstance(dimension, tuple) or isinstance(dimension, list)) \
                 and len(dimension) == 3 \
                 and all(isinstance(d, int) for d in dimension) \
                 and isinstance(resolution, int):
