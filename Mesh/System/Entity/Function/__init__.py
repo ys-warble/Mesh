@@ -27,3 +27,7 @@ class BaseFunction:
 
 class FunctionSetError(Exception):
     pass
+
+
+class FunctionUnsupportedError(Exception):
+    pass

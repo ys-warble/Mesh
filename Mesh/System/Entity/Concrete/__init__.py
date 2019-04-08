@@ -1,7 +1,7 @@
 import numpy as np
 
 from Mesh.System.Entity import Entity
-from Mesh.System.Entity.Function import Function, FunctionSetError
+from Mesh.System.Entity.Function import Function, FunctionSetError, FunctionUnsupportedError
 
 
 def transform_shape(entity_shape, from_direction, to_direction):
@@ -124,10 +124,16 @@ class Concrete(Entity):
 
     # TASK
     def send_task(self, task):
-        return self.get_function(Function.TASKED).send(task)
+        try:
+            return self.get_function(Function.TASKED).send(task)
+        except AttributeError:
+            raise FunctionUnsupportedError(Function.TASKED.value)
 
     def recv_task_resp(self):
-        return self.get_function(Function.TASKED).recv()
+        try:
+            return self.get_function(Function.TASKED).recv()
+        except AttributeError:
+            raise FunctionUnsupportedError(Function.TASKED.value)
 
     # PYTHON BUILT IN
     def __str__(self):
