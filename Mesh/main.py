@@ -8,19 +8,20 @@ from Mesh.System.SpaceFactor import SpaceFactor
 from Mesh.System.System import System
 
 
-def load_system_file(file):
-    content = json.load(file)
+def load_system_file(file_path):
+    with open(file_path, 'r') as system_file:
+        content = json.load(system_file)
 
     # system
-    o_system = None
+    _system = None
     if 'system' in content:
-        o_system = System(**(content['system']))
+        _system = System(**(content['system']))
 
     # space
     if 'space' in content:
         if 'space_factor_types' in content['space']:
             content['space']['space_factor_types'] = [SpaceFactor[s] for s in content['space']['space_factor_types']]
-        o_system.put_space(**(content['space']))
+        _system.put_space(**(content['space']))
 
     # entities
     if 'entities' in content:
@@ -29,25 +30,22 @@ def load_system_file(file):
             if 'selected_functions' in row:
                 row['selected_functions'] = [Function[s] for s in row['selected_functions']]
             entity = ef.get_entity(**{x: row[x] for x in row if x not in ['location']})
-            o_system.put_entity(entity, row['location'])
+            _system.put_entity(entity, row['location'])
 
     # channels
     if 'channels' in content:
         cf = ChannelFactory()
         for row in content['channels']:
             kwargs = {x: row[x] for x in row if x not in ['channel']}
-            kwargs['_from'] = o_system.get_entity(kwargs['_from'])
-            kwargs['_to'] = o_system.get_entity(kwargs['_to'])
+            kwargs['_from'] = _system.get_entity(kwargs['_from'])
+            kwargs['_to'] = _system.get_entity(kwargs['_to'])
             cf.get_channel(row['channel'], **kwargs)
 
-    return o_system
+    return _system
 
 
 if __name__ == '__main__':
-    system = None
-
-    with open('../resources/examples/example_1/system.json', 'r') as system_file:
-        system = load_system_file(system_file)
+    system = load_system_file('../resources/examples/example_1/system.json')
 
     print(system)
 
