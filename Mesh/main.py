@@ -1,33 +1,62 @@
-import time
-import uuid
-from multiprocessing import Process, Queue, Pipe
+import json
 
-from Mesh.System.Entity.Concrete.Light import Light
-from Mesh.System.Entity.Function.Tasked import Task
-from Mesh.System.Entity.Task import Command
+from Mesh.System.Entity.Channel.ChannelFactory import ChannelFactory
+from Mesh.System.Entity.EntityFactory import EntityFactory
+from Mesh.System.Entity.Function import Function
+from Mesh.System.Entity.Function.Tasked import SystemTask, TaskName
+from Mesh.System.SpaceFactor import SpaceFactor
+from Mesh.System.System import System
+
+
+def load_system_file(file):
+    content = json.load(file)
+
+    # system
+    o_system = None
+    if 'system' in content:
+        o_system = System(**(content['system']))
+
+    # space
+    if 'space' in content:
+        if 'space_factor_types' in content['space']:
+            content['space']['space_factor_types'] = [SpaceFactor[s] for s in content['space']['space_factor_types']]
+        o_system.put_space(**(content['space']))
+
+    # entities
+    if 'entities' in content:
+        ef = EntityFactory()
+        for row in content['entities']:
+            if 'selected_functions' in row:
+                row['selected_functions'] = [Function[s] for s in row['selected_functions']]
+            entity = ef.get_entity(**{x: row[x] for x in row if x not in ['location']})
+            o_system.put_entity(entity, row['location'])
+
+    # channels
+    if 'channels' in content:
+        cf = ChannelFactory()
+        for row in content['channels']:
+            kwargs = {x: row[x] for x in row if x not in ['channel']}
+            kwargs['_from'] = o_system.get_entity(kwargs['_from'])
+            kwargs['_to'] = o_system.get_entity(kwargs['_to'])
+            cf.get_channel(row['channel'], **kwargs)
+
+    return o_system
+
 
 if __name__ == '__main__':
-    light1 = Light(uuid=uuid.uuid4())
-    light2 = Light(uuid=uuid.uuid4())
+    system = None
 
-    result_queue = Queue()
-    light1_ppipe, light1_cpipe = Pipe()
-    light2_ppipe, light2_cpipe = Pipe()
-    light1_p = Process(target=light1.run, args=(result_queue, light1_cpipe))
-    light2_p = Process(target=light2.run, args=(result_queue, light2_cpipe))
+    with open('../resources/examples/example_1/system.json', 'r') as system_file:
+        system = load_system_file(system_file)
 
-    light1_p.start()
-    light2_p.start()
+    print(system)
 
-    print('Send pipe 1')
-    light1_ppipe.send(Task(Command.END))
-    print(light1_ppipe.recv())
-    time.sleep(1)
+    system.get_entity(0).send_task(SystemTask(TaskName.ACTIVE))
+    system.get_entity(1).send_task(SystemTask(TaskName.ACTIVE))
+    system.get_entity(2).send_task(SystemTask(TaskName.ACTIVE))
 
-    print('Send pipe 2')
-    light2_ppipe.send(Task(Command.END))
-    print(light2_ppipe.recv())
-    time.sleep(1)
+    system.get_entity(2).send_task(SystemTask(TaskName.GET_SYSTEM_INFO))
+    tr = system.get_entity(2).recv_task_resp()
+    print(tr)
 
-    light1_p.join()
-    light2_p.join()
+    system.destroy()
