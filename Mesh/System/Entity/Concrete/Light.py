@@ -142,3 +142,51 @@ class LightTasked(Tasked):
             task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         return task_response
+
+
+class LightActuate(Actuate):
+    def __init__(self, entity):
+        super().__init__(entity)
+        self.space = None
+        self.location = None
+        self.orientation = None
+        self.space_factors = None
+
+    def actuate(self, space, location, orientation):
+        def _calc_brightness(i, j, k):
+            return brightness / (((center[0] - i) / resolution) ** 2 + ((center[1] - j) / resolution) ** 2 + (
+                    (center[2] - k) / resolution) ** 2 + 1) ** (2 / wattage)
+
+        def _calc_temperature(i, j, k):
+            return temperature_raise / (((center[0] - i) / resolution) ** 2 + ((center[1] - j) / resolution) ** 2 + (
+                    (center[2] - k) / resolution) ** 2 + 1) ** (2 / wattage)
+
+        center = [location[i] + int(self.entity.dimension[i] / 2) for i in range(len(location))]
+        brightness = self.entity.brightness
+        temperature_raise = self.entity.temperature_raise
+        resolution = space.resolution
+        wattage = self.entity.wattage
+
+        self.space_factors = dict()
+
+        # Luminosity
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY] = dict()
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE] = \
+            np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.hue)
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION] = \
+            np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.saturation)
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
+            np.fromfunction(_calc_brightness,
+                            tuple([i * space.resolution for i in space.dimension]), dtype=int)
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
+            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS].astype(int)
+
+        # Temperature
+        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE] = dict()
+        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
+            np.fromfunction(_calc_temperature,
+                            tuple([i * space.resolution for i in space.dimension]), dtype=int)
+        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
+            self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE].astype(int)
+
+        return self.space_factors
