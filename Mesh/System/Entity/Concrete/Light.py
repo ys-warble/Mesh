@@ -76,6 +76,9 @@ class Light(Concrete):
         if Function.COMPUTE in selected_functions:
             self.functions[Function.COMPUTE] = Compute(self)
 
+        if Function.ACTUATE in selected_functions:
+            self.functions[Function.ACTUATE] = LightActuate(self)
+
 
 class LightTasked(Tasked):
     tasks = [
@@ -129,6 +132,12 @@ class LightTasked(Tasked):
                 if power not in powered.input_power_ratings:
                     self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)
+            elif task.name == TaskName.ACTUATE:
+                if power not in powered.input_power_ratings:
+                    task_response = TaskResponse(status=Status.ERROR, value={'error': 'No Input Power'})
+                else:
+                    space_factor_patch = self.entity.get_function(Function.ACTUATE).actuate(**task.value)
+                    task_response = TaskResponse(status=Status.OK, value=space_factor_patch)
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
