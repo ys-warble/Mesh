@@ -365,3 +365,46 @@ class TestMain(AppTestCase):
         light_switch2.destroy()
         light1.destroy()
         light2.destroy()
+
+    def test_main_7(self):
+        # Create System
+        self.system = System('MyNewSystem')
+
+        # Put Space on the System
+        self.system.put_space(dimension=(40, 30, 12), resolution=1,
+                              space_factor_types=[i for i in SpaceFactor.SpaceFactor])
+
+        # Put Entity on the Space
+        power_supply = PowerSupply(uuid=uuid.uuid4())
+        light_switch1 = Switch(uuid=uuid.uuid4())
+        wire_ls1 = PowerWire(power_supply, light_switch1)
+        light1 = Light(uuid=uuid.uuid4())
+        wire_l1 = PowerWire(light_switch1, light1)
+
+        self.system.put_entity(power_supply, (19, 14, 9))
+        self.system.put_entity(light_switch1, (19, 14, 9))
+        self.system.put_entity(light1, (9, 14, 9))
+
+        power_supply.send_task(SystemTask(TaskName.ACTIVE))
+        light_switch1.send_task(SystemTask(TaskName.ACTIVE))
+        light1.send_task(SystemTask(TaskName.ACTIVE))
+
+        light1.send_task(SystemTask(TaskName.ACTUATE, value={'space': self.system.space,
+                                                             'location': self.system.entities[2][1],
+                                                             'orientation': self.system.entities[2][1]}))
+        res = light1.recv_task_resp()
+
+        luminosity = npx.char.mod('hsl(%d,%d%,%d%)', (
+            res.value[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE],
+            res.value[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION],
+            res.value[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS]))
+
+        Plotter.plot_scatter_3d(
+            array3d=luminosity,
+            zero_value=-1,
+            filename=os.path.join(test_settings.actual_path, self._testMethodName + '_luminosity_plot.html'),
+            auto_open=True,
+            opacity=0.6
+        )
+
+        light1.destroy()
