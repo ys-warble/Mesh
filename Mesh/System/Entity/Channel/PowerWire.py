@@ -3,6 +3,8 @@ from Mesh.System.Entity.Function import Function
 
 
 class PowerWire(Channel):
+    identifier = 'power_wire'
+
     def __init__(self, _from, _to):
         from Mesh.System.Entity.Function.Powered import Powered, PowerInput, PowerOutput
         from Mesh.System.Entity.Concrete import Concrete

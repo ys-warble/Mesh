@@ -28,4 +28,4 @@ class Entity(ABC):
         pass
 
     def __str__(self):
-        return 'Entity(uuid=.%s)' % str(self.uuid)[-8:]
+        return '%s(uuid=.%s)' % (type(self).__class__.__name__, str(self.uuid)[-8:])
