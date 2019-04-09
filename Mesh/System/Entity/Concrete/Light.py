@@ -18,6 +18,14 @@ class Light(Concrete):
 
     default_consume_power_ratings = [ElectricPower(110)]
 
+    default_hue = 208
+    default_saturation = 100
+    default_brightness = 90
+
+    default_wattage = 15
+
+    default_temperature_raise = 5  # Kelvin
+
     def __init__(self, uuid, dimension_x=(1, 1, 1),
                  selected_functions=(Function.POWERED, Function.TASKED, Function.COMPUTE, Function.ACTUATE),
                  hue=default_hue, saturation=default_saturation, brightness=default_brightness,
