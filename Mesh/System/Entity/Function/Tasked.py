@@ -16,6 +16,8 @@ class TaskName(Enum):
     SET_POWER = 102
     ACTIVE = 103
     DEACTIVATE = 104
+    ACTUATE = 105
+    SENSE = 106
 
     GET_INFO = 201
 
