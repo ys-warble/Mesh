@@ -1,7 +1,9 @@
 import numpy as np
 
+import Mesh.System.SpaceFactor as SpaceFactor
 from Mesh.System.Entity.Concrete import Concrete
 from Mesh.System.Entity.Function import Function
+from Mesh.System.Entity.Function.Actuate import Actuate
 from Mesh.System.Entity.Function.Compute import Compute
 from Mesh.System.Entity.Function.Powered import PowerInput, Powered, ElectricPower
 from Mesh.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, TaskResponse, \
@@ -16,9 +18,25 @@ class Light(Concrete):
 
     default_consume_power_ratings = [ElectricPower(110)]
 
+    default_hue = 208
+    default_saturation = 100
+    default_brightness = 90
+
+    default_wattage = 15
+
+    default_temperature_raise = 5  # Kelvin
+
     def __init__(self, uuid, dimension_x=(1, 1, 1),
-                 selected_functions=(Function.POWERED, Function.TASKED, Function.COMPUTE)):
+                 selected_functions=(Function.POWERED, Function.TASKED, Function.COMPUTE, Function.ACTUATE),
+                 hue=default_hue, saturation=default_saturation, brightness=default_brightness,
+                 wattage=default_wattage,
+                 temperature_raise=default_temperature_raise):
         self.active = False
+        self.hue = hue
+        self.saturation = saturation
+        self.brightness = brightness
+        self.wattage = wattage
+        self.temperature_raise = temperature_raise
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS,
                          selected_functions=selected_functions)
 
@@ -57,6 +75,9 @@ class Light(Concrete):
 
         if Function.COMPUTE in selected_functions:
             self.functions[Function.COMPUTE] = Compute(self)
+
+        if Function.ACTUATE in selected_functions:
+            self.functions[Function.ACTUATE] = LightActuate(self)
 
 
 class LightTasked(Tasked):
@@ -111,6 +132,12 @@ class LightTasked(Tasked):
                 if power not in powered.input_power_ratings:
                     self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)
+            elif task.name == TaskName.ACTUATE:
+                if power not in powered.input_power_ratings:
+                    task_response = TaskResponse(status=Status.ERROR, value={'error': 'No Input Power'})
+                else:
+                    space_factor_patch = self.entity.get_function(Function.ACTUATE).actuate(**task.value)
+                    task_response = TaskResponse(status=Status.OK, value=space_factor_patch)
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
@@ -124,3 +151,51 @@ class LightTasked(Tasked):
             task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
         return task_response
+
+
+class LightActuate(Actuate):
+    def __init__(self, entity):
+        super().__init__(entity)
+        self.space = None
+        self.location = None
+        self.orientation = None
+        self.space_factors = None
+
+    def actuate(self, space, location, orientation):
+        def _calc_brightness(i, j, k):
+            return brightness / (((center[0] - i) / resolution) ** 2 + ((center[1] - j) / resolution) ** 2 + (
+                    (center[2] - k) / resolution) ** 2 + 1) ** (2 / wattage)
+
+        def _calc_temperature(i, j, k):
+            return temperature_raise / (((center[0] - i) / resolution) ** 2 + ((center[1] - j) / resolution) ** 2 + (
+                    (center[2] - k) / resolution) ** 2 + 1) ** (2 / wattage)
+
+        center = [location[i] + int(self.entity.dimension[i] / 2) for i in range(len(location))]
+        brightness = self.entity.brightness
+        temperature_raise = self.entity.temperature_raise
+        resolution = space.resolution
+        wattage = self.entity.wattage
+
+        self.space_factors = dict()
+
+        # Luminosity
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY] = dict()
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE] = \
+            np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.hue)
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION] = \
+            np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.saturation)
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
+            np.fromfunction(_calc_brightness,
+                            tuple([i * space.resolution for i in space.dimension]), dtype=int)
+        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
+            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS].astype(int)
+
+        # Temperature
+        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE] = dict()
+        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
+            np.fromfunction(_calc_temperature,
+                            tuple([i * space.resolution for i in space.dimension]), dtype=int)
+        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
+            self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE].astype(int)
+
+        return self.space_factors

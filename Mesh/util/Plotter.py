@@ -10,16 +10,18 @@ def plot_scatter_3d(array3d,
                     zero_value=0,
                     filename=None,
                     auto_open=True,
-                    opacity=1):
+                    opacity=1,
+                    colorscale='Viridis'):
     func = None
 
     if settings.PLOTTER_TOOL == PlotterTool.PLOTLY:
         func = plotly_plot_scatter_3d
 
-    func(array3d=array3d, zero_value=zero_value, filename=filename, auto_open=auto_open, opacity=opacity)
+    func(array3d=array3d, zero_value=zero_value, filename=filename, auto_open=auto_open, opacity=opacity,
+         colorscale=colorscale)
 
 
-def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True, cc=1, opacity=1):
+def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True, cc=1, opacity=1, colorscale='Viridis'):
     # zero_value = 0 if ('zero_value' not in kwargs or not isinstance(kwargs['zero_value'], int)) else kwargs[
     #     'zero_value']
 
@@ -48,7 +50,7 @@ def plotly_plot_scatter_3d(array3d, zero_value=0, filename=None, auto_open=True,
             symbol='circle',
             size=4,
             color=array3d[nz_array3d_indices],  # set color to an array/list of desired values
-            colorscale='Viridis',  # choose a colorscale
+            colorscale=colorscale,  # choose a colorscale
             opacity=opacity
         )
     )
