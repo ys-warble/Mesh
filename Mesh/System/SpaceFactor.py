@@ -80,20 +80,21 @@ SpaceFactorMap = {
 }
 
 
-def generate(space_factor_type, dimension, resolution):
+def generate(space_factor_type, dimension, resolution, default_value=True):
     """
 
     :param space_factor_type: SpaceFactor Enum
     :param dimension: Tuple dimensions o
     :param resolution:
+    :param default_value:
     :return:
     """
 
     space_matrices = {}
     for space_subfactor in SpaceFactorMap[space_factor_type]:
         space_matrices[space_subfactor] = np.full(shape=tuple([i * resolution for i in dimension]),
-                                                  fill_value=SpaceFactorMap[space_factor_type][space_subfactor][
-                                                      'default_value'],
+                                                  fill_value=(SpaceFactorMap[space_factor_type][space_subfactor][
+                                                                  'default_value'] if default_value else 0),
                                                   dtype=SpaceFactorMap[space_factor_type][space_subfactor]['dtype']
                                                   )
 
