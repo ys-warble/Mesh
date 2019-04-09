@@ -1,7 +1,9 @@
 import numpy as np
 
+import Mesh.System.SpaceFactor as SpaceFactor
 from Mesh.System.Entity.Concrete import Concrete
 from Mesh.System.Entity.Function import Function
+from Mesh.System.Entity.Function.Actuate import Actuate
 from Mesh.System.Entity.Function.Compute import Compute
 from Mesh.System.Entity.Function.Powered import PowerInput, Powered, ElectricPower
 from Mesh.System.Entity.Function.Tasked import TaskLevel, TaskName, Status, TaskResponse, \
@@ -17,8 +19,16 @@ class Light(Concrete):
     default_consume_power_ratings = [ElectricPower(110)]
 
     def __init__(self, uuid, dimension_x=(1, 1, 1),
-                 selected_functions=(Function.POWERED, Function.TASKED, Function.COMPUTE)):
+                 selected_functions=(Function.POWERED, Function.TASKED, Function.COMPUTE, Function.ACTUATE),
+                 hue=default_hue, saturation=default_saturation, brightness=default_brightness,
+                 wattage=default_wattage,
+                 temperature_raise=default_temperature_raise):
         self.active = False
+        self.hue = hue
+        self.saturation = saturation
+        self.brightness = brightness
+        self.wattage = wattage
+        self.temperature_raise = temperature_raise
         super().__init__(uuid=uuid, dimension_x=dimension_x, matter_type=MatterType.GLASS,
                          selected_functions=selected_functions)
 
