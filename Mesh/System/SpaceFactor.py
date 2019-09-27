@@ -1,3 +1,4 @@
+from abc import ABC
 from enum import Enum
 
 import numpy as np
@@ -57,6 +58,79 @@ class AirMovement(Enum):
     Z = 3  # in m/s
 
 
+class SpaceFactorModifier:
+    def __init__(self, selected_space_factors=(SpaceFactor.MATTER,
+                                               SpaceFactor.TEMPERATURE,
+                                               SpaceFactor.HUMIDITY,
+                                               SpaceFactor.LUMINOSITY,
+                                               SpaceFactor.AIR_MOVEMENT)):
+        self.spacefactor_operators = dict()
+        for selected_space_factor in selected_space_factors:
+            self.spacefactor_operators[selected_space_factor] = None
+
+    def modify(self, current, patches):
+        for k, operator in self.spacefactor_operators.items():
+            if operator is None:
+                print('WARNING: Space Factor Operation for %s is NOT defined' % k.value)
+            operator.operate(current, patches)
+
+
+class SpaceFactorOperation(ABC):
+    def __init__(self):
+        pass
+
+    def operate(self, current, patches=()):
+        raise NotImplementedError
+
+
+class MatterOperation(SpaceFactorOperation):
+    def operate(self, current, patches=()):
+        if patches == ():
+            return current
+
+
+class TemperatureOperation(SpaceFactorOperation):
+    def operate(self, current, patches=()):
+        if patches == ():
+            return current
+
+        for space_subfactor in current:
+            for patch in patches:
+                current[space_subfactor] += patch[space_subfactor]
+
+        return current
+
+
+class HumidityOperation(SpaceFactorOperation):
+    def operate(self, current, patches=()):
+        if patches == ():
+            return current
+
+
+class LuminosityOperation(SpaceFactorOperation):
+    def operate(self, current, patches=()):
+        if patches == ():
+            return current
+
+        # TODO: Need to implement Hue and Saturation addition
+        # TODO: Need to implement shadow casting algorithm
+        for patch in patches:
+            if SpaceFactor.LUMINOSITY in current and SpaceFactor.LUMINOSITY in patch and \
+                    Luminosity.BRIGHTNESS in current[SpaceFactor.LUMINOSITY] and \
+                    Luminosity.BRIGHTNESS in patch[SpaceFactor.LUMINOSITY]:
+                current[SpaceFactor.LUMINOSITY][Luminosity.BRIGHTNESS] = np.maximum(
+                    current[SpaceFactor.LUMINOSITY][Luminosity.BRIGHTNESS],
+                    patch[SpaceFactor.LUMINOSITY][Luminosity.BRIGHTNESS])   # Just get the max of the Brightness
+
+        return current
+
+
+class AirMovementOperation(SpaceFactorOperation):
+    def operate(self, current, patches=()):
+        if patches == ():
+            return current
+
+
 SpaceFactorMap = {
     SpaceFactor.MATTER: {
         Matter.MATTER: {'dtype': int, 'default_value': MatterType.ATMOSPHERE.value},
@@ -73,9 +147,9 @@ SpaceFactorMap = {
         Humidity.HUMIDITY: {'dtype': int, 'default_value': 0},
     },
     SpaceFactor.AIR_MOVEMENT: {
-        AirMovement.X: {'dtype': int, 'default_value': 0},
-        AirMovement.Y: {'dtype': int, 'default_value': 0},
-        AirMovement.Z: {'dtype': int, 'default_value': 0},
+        AirMovement.X: {'dtype': int, 'default_value': 4},
+        AirMovement.Y: {'dtype': int, 'default_value': 2},
+        AirMovement.Z: {'dtype': int, 'default_value': 7},
     },
 }
 

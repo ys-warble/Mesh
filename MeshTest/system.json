@@ -1,0 +1,221 @@
+{
+  "system": {
+    "name": "MyNewSystem"
+  },
+  "space": {
+    "dimension": [
+      40,
+      30,
+      12
+    ],
+    "resolution": 1,
+    "space_factor_types": [
+      "MATTER",
+      "TEMPERATURE",
+      "HUMIDITY",
+      "LUMINOSITY",
+      "AIR_MOVEMENT"
+    ]
+  },
+  "entities": [
+    {
+      "entity": "power_supply",
+      "uuid": "c138778d-eb5f-4840-abab-f176c5f74eef",
+      "dimension": [
+        1,
+        1,
+        1
+      ],
+      "selected_features": [
+        "POWERED",
+        "TASKED"
+      ],
+      "location": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "entity": "switch",
+      "uuid": "b656f020-27d7-4ce2-bfbb-80a02f396bc4",
+      "dimension": [
+        1,
+        1,
+        2
+      ],
+      "selected_features": [
+        "POWERED",
+        "TASKED"
+      ],
+      "location": [
+        19,
+        0,
+        5
+      ]
+    },
+    {
+      "entity": "light",
+      "uuid": "42c263dc-c777-4968-a7db-5d1b7d76fdb9",
+      "dimension": [
+        3,
+        3,
+        3
+      ],
+      "selected_features": [
+        "POWERED",
+        "TASKED",
+        "COMPUTE",
+        "ACTUATE"
+      ],
+      "location": [
+        9,
+        14,
+        9
+      ]
+    },
+    {
+      "entity": "switch",
+      "uuid": "7f730fab-1e92-4208-937d-58e43fd881dd",
+      "dimension": [
+        1,
+        1,
+        2
+      ],
+      "selected_features": [
+        "POWERED",
+        "TASKED"
+      ],
+      "location": [
+        21,
+        0,
+        5
+      ]
+    },
+    {
+      "entity": "light",
+      "uuid": "73fce1ce-d01b-4c4d-9214-346ea93c9786",
+      "dimension": [
+        3,
+        3,
+        3
+      ],
+      "selected_features": [
+        "POWERED",
+        "TASKED",
+        "COMPUTE",
+        "ACTUATE"
+      ],
+      "location": [
+        29,
+        14,
+        9
+      ]
+    },
+    {
+      "entity": "tables",
+      "uuid": "17f100c2-edce-474e-9b9e-3a70bc58ef64",
+      "dimension": [
+        10,
+        4,
+        4
+      ],
+      "selected_features": [],
+      "location": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "entity": "air_conditioner",
+      "uuid": "215cb913-e295-4b5d-807c-abc1ff9bb724",
+      "dimension": [
+        6,
+        3,
+        3
+      ],
+      "selected_features": [],
+      "location": [
+        37,
+        22,
+        9
+      ]
+    },
+    {
+      "entity": "smoke_detector",
+      "uuid": "f266d427-298e-4688-85a0-d949a12d0ab0",
+      "dimension": [
+        2,
+        2,
+        1
+      ],
+      "selected_features": [],
+      "location": [
+        19,
+        20,
+        11
+      ]
+    },
+    {
+      "entity": "thermostat",
+      "uuid": "13e50771-1a47-4b9f-a782-4a649a978f5a",
+      "dimension": [
+        2,
+        1,
+        2
+      ],
+      "selected_features": [],
+      "location": [
+        30,
+        0,
+        5
+      ]
+    },
+    {
+      "entity": "chair",
+      "uuid": "fa6fbd66-6a5b-4784-ac84-362db41c3ec7",
+      "dimension": [
+        3,
+        3,
+        5
+      ],
+      "selected_features": [],
+      "location": [
+        4,
+        4,
+        0
+      ]
+    },
+    {
+      "entity": "human",
+      "uuid": "8ddb92b5-ee82-4b85-bbda-dc2ca829de29",
+      "dimension": [
+        4,
+        2,
+        8
+      ],
+      "selected_features": [],
+      "location": [
+        25,
+        20,
+        0
+      ]
+    },
+    {
+      "entity": "wardrobe",
+      "uuid": "61c86d7e-fb8e-4cb3-bd6b-13dfdfca0c4e",
+      "dimension": [
+        6,
+        5,
+        8
+      ],
+      "selected_features": [],
+      "location": [
+        0,
+        20,
+        0
+      ]
+    }
+  ]
+}

@@ -15,7 +15,7 @@ class System:
 
         self.logger = Logger.get_logger(__name__)
 
-    def put_space(self, dimension, resolution=1, space_factor_types=None):
+    def put_space(self, dimension, resolution=1, space_factor_types=None, default_value=True):
         """
 
         :param dimension: tuple: representing 3-dimensional space measures
@@ -26,7 +26,7 @@ class System:
         if space_factor_types is None:
             space_factor_types = []
 
-        self.space = Space(dimension, resolution, space_factor_types)
+        self.space = Space(dimension, resolution, space_factor_types, default_value)
 
         # TODO: How if the space is re-put after putting entities?
 
@@ -122,3 +122,26 @@ class System:
         string += ')'
 
         return string
+
+    def to_json(self):
+        json = {
+            "system": {
+                "name": self.name
+            },
+            "space": {
+                "dimension": self.space.dimension,
+                "resolution": self.space.resolution,
+                "space_factor_types": [i.value for i in self.space.space_factors.keys()]
+            },
+            "entities": [
+                {
+                    "entity": type(i[0]).identifier,
+                    "uuid": str(i[0].uuid),
+                    "dimension": i[0].dimension,
+                    "selected_features": [j.value for j in i[0].functions.keys()],
+                    "location": i[1]
+                }
+                for i in self.entities],
+        }
+
+        return json

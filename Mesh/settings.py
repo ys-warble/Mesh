@@ -1,4 +1,5 @@
 import logging
+import os
 
 from Mesh.util.PlotterTool import PlotterTool
 
@@ -20,3 +21,6 @@ PLOTTER_TOOL = PlotterTool.PLOTLY
 
 # Entity
 ENTITY_TASK_POLLING_DURATION = 2  # in seconds
+
+# RESOURCES
+RESOURCES_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources')

@@ -133,11 +133,8 @@ class LightTasked(Tasked):
                     self.entity.active = False
                 task_response = TaskResponse(status=Status.OK, value=None)
             elif task.name == TaskName.ACTUATE:
-                if power not in powered.input_power_ratings:
-                    task_response = TaskResponse(status=Status.ERROR, value={'error': 'No Input Power'})
-                else:
-                    space_factor_patch = self.entity.get_function(Function.ACTUATE).actuate(**task.value)
-                    task_response = TaskResponse(status=Status.OK, value=space_factor_patch)
+                space_factor_patch = self.entity.get_function(Function.ACTUATE).actuate(**task.value, active=(power in powered.input_power_ratings))
+                task_response = TaskResponse(status=Status.OK, value=space_factor_patch)
             else:
                 task_response = TaskResponse(Status.ERROR, {'error': 'Not Implemented'})
 
@@ -161,7 +158,7 @@ class LightActuate(Actuate):
         self.orientation = None
         self.space_factors = None
 
-    def actuate(self, space, location, orientation):
+    def actuate(self, space, location, orientation, active=True):
         def _calc_brightness(i, j, k):
             return brightness / (((center[0] - i) / resolution) ** 2 + ((center[1] - j) / resolution) ** 2 + (
                     (center[2] - k) / resolution) ** 2 + 1) ** (2 / wattage)
@@ -170,32 +167,36 @@ class LightActuate(Actuate):
             return temperature_raise / (((center[0] - i) / resolution) ** 2 + ((center[1] - j) / resolution) ** 2 + (
                     (center[2] - k) / resolution) ** 2 + 1) ** (2 / wattage)
 
-        center = [location[i] + int(self.entity.dimension[i] / 2) for i in range(len(location))]
-        brightness = self.entity.brightness
-        temperature_raise = self.entity.temperature_raise
-        resolution = space.resolution
-        wattage = self.entity.wattage
-
         self.space_factors = dict()
 
-        # Luminosity
-        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY] = dict()
-        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE] = \
-            np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.hue)
-        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION] = \
-            np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.saturation)
-        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
-            np.fromfunction(_calc_brightness,
-                            tuple([i * space.resolution for i in space.dimension]), dtype=int)
-        self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
-            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS].astype(int)
+        if active:
+            center = [location[i] + int(self.entity.dimension[i] / 2) for i in range(len(location))]
+            brightness = self.entity.brightness
+            temperature_raise = self.entity.temperature_raise
+            resolution = space.resolution
+            wattage = self.entity.wattage
 
-        # Temperature
-        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE] = dict()
-        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
-            np.fromfunction(_calc_temperature,
-                            tuple([i * space.resolution for i in space.dimension]), dtype=int)
-        self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
-            self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE].astype(int)
+            # Luminosity
+            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY] = dict()
+            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.HUE] = \
+                np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.hue)
+            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.SATURATION] = \
+                np.full(tuple([i * space.resolution for i in space.dimension]), fill_value=self.entity.saturation)
+            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
+                np.fromfunction(_calc_brightness,
+                                tuple([i * space.resolution for i in space.dimension]), dtype=int)
+            self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS] = \
+                self.space_factors[SpaceFactor.SpaceFactor.LUMINOSITY][SpaceFactor.Luminosity.BRIGHTNESS].astype(int)
 
-        return self.space_factors
+            # Temperature
+            self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE] = dict()
+            self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
+                np.fromfunction(_calc_temperature,
+                                tuple([i * space.resolution for i in space.dimension]), dtype=int)
+            self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE] = \
+                self.space_factors[SpaceFactor.SpaceFactor.TEMPERATURE][SpaceFactor.Temperature.TEMPERATURE].astype(int)
+
+            return self.space_factors
+
+        else:
+            return self.space_factors
